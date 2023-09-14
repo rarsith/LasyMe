@@ -2,16 +2,18 @@ import os
 import getpass
 from tinydb import TinyDB
 
-_curr_user = getpass.getuser()
-db_root_path = "../database"
+_CURRENT_USER = getpass.getuser()
+_DB_ROOT_PATH = "C:\\Users\\arsithra\\PycharmProjects\\LasyMe\\databases"
 
-db_name = f'{_curr_user}_TODO_tasks_db.json'
-db_full = os.path.join(db_root_path, db_name)
-Session = TinyDB(db_full)
+TASKS_DATABASE_NAME = f'{_CURRENT_USER}_TODO_tasks_db.json'
+USERS_DATABASE_NAME = f'{_CURRENT_USER}_TODO_users_db.json'
+TAGS_DATABASE_NAME = f'{_CURRENT_USER}_TODO_tags_db.json'
+
+TasksDbPath = os.path.join(_DB_ROOT_PATH, TASKS_DATABASE_NAME)
+UsersDbPath = os.path.join(_DB_ROOT_PATH, USERS_DATABASE_NAME)
+TagsDbPath = os.path.join(_DB_ROOT_PATH, TAGS_DATABASE_NAME)
 
 
-# class Session:
-#     def __init__(self):
-#         self.db_name = f'{_curr_user}_TODO_tasks_db.json'
-#         self.db_full = os.path.join(db_root_path, self.db_name)
-#         TinyDB(self.db_full)
+if __name__ == "__main__":
+    dd = TasksDbPath().path()
+    print (dd)

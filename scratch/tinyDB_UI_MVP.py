@@ -5,7 +5,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, Q
     QLineEdit, QListWidget, QTextBrowser
 from tinydb import TinyDB, Query
 
-# Create or open the TinyDB database
+# Create or open the TinyDB databases
 db = TinyDB('task_database.json')
 task_table = db.table('tasks')
 

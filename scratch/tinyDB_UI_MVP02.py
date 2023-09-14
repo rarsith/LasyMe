@@ -70,8 +70,8 @@ class MainWindow(QMainWindow):
         main_presenter = MainPresenter(title_display_widget, text_viewer_widget)
 
 def get_text_from_database(title):
-    # Simulated database query to retrieve text based on the selected title
-    # Replace with your database logic
+    # Simulated databases query to retrieve text based on the selected title
+    # Replace with your databases logic
     return f"Text for {title}"
 
 def main():

@@ -1,35 +1,22 @@
-import os
-import getpass
-from tinydb import TinyDB, Query
-from operations.tdb_attributes_paths import TinyAttributesPaths
 from operations.tdb_attributes_definitions import TaskAttributesDefinitions
+from operations.connection import TasksDbPath, TASKS_DATABASE_NAME
+from operations.tdb_manager import TinyDBManager
 
-_curr_user = getpass.getuser()
-db_root_path = "../database"
-
-db_name = f'{_curr_user}_TODO_tasks_db.json'
-db_full = os.path.join(db_root_path, db_name)
-# Session = TinyDB(db_full)
-
-attr_def = TaskAttributesDefinitions()
-tiny_attr = TinyAttributesPaths(attr_def)
-query = Query()
 
 class TinyOps:
     def __init__(self):
-        self.db = TinyDB(db_full)
-        print(self.db)
-        self.table = self.db.table(db_name)
+        self.db = TinyDBManager(TasksDbPath)
+        self.table = self.db.get_table(TASKS_DATABASE_NAME)
 
     def insert_task(self, document: dict):
         test = self.table.insert(document)
         return test
 
-    def update_task(self, doc_id, updates):
-        self.table.update(updates, doc_ids=[doc_id])
+    def update_task(self, task_id, updates):
+        self.table.update(updates, doc_ids=[task_id])
 
-    def delete_task(self, doc_id):
-        self.table.remove(doc_ids=[doc_id])
+    def delete_task(self, task_id):
+        self.table.remove(doc_ids=[task_id])
 
     def get_all_documents(self, ids=False):
         full_docs= {}
@@ -76,7 +63,8 @@ class TinyOps:
 
     def get_task_end_date(self, task_id):
         result = self.get_doc_by_id(task_id=task_id)
-        return result[TaskAttributesDefinitions().end_date_interval]
+        if result:
+            return result[TaskAttributesDefinitions().end_date_interval]
 
     def get_task_prio(self, task_id):
         result = self.get_doc_by_id(task_id=task_id)
@@ -104,29 +92,30 @@ class TinyOps:
 
 
 if __name__ == "__main__":
-    import pprint
-    from operations.task_schema import TaskSchema
-
     tops = TinyOps()
-    attr_def = TaskAttributesDefinitions()
-    tiny_attr = TinyAttributesPaths(attr_def)
-
-    gen_task_schema = TaskSchema(attr_def)
-    gen_task_schema.task_details = "Here is a sample for Task Details..."
-
-    new_task = gen_task_schema.to_dict()
+    # print(tops)
+    # attr_def = TaskAttributesDefinitions()
+    # tiny_attr = TinyAttributesPaths(attr_def)
+    #
+    # gen_task_schema = TaskSchema(attr_def)
+    # gen_task_schema.task_details = "Here is a sample for Task Details..."
+    #
+    # new_task = gen_task_schema.to_dict()
 
     # new_id = tops.insert_task(new_task)
     # print(new_id)
 
     # tops.update_task(new_id, tiny_attr.assigned_to(value="hellooRA"))
 
-    all_docum = tops.get_all_documents(ids=True)
+    # all_docum = tops.get_all_documents(ids=True)
     # pprint.pprint(all_docum)
+    #
+    doc_id = 1
 
-    doc_id = 2
+    # tops.delete_task(task_id=doc_id)
 
     result_value = tops.get_task_end_date(task_id=doc_id)
     print(result_value)
+
 
 

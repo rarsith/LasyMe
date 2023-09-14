@@ -40,8 +40,12 @@ class DateTime(object):
         if not percentage:
             return elapsed.days
 
-        to_percentage = ((total_time - time_left) / total_time)*100
-        return to_percentage
+        if total_time !=0:
+            to_percentage = ((total_time - time_left) / total_time)*100
+            return to_percentage
+        else:
+            to_percentage = 100
+            return to_percentage
 
 if __name__ == "__main__":
     start_date_str = "2023-09-10"

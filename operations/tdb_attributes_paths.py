@@ -31,3 +31,31 @@ class TinyAttributesPaths:
 
     def task_details(self, value: str) -> dict:
         return {self.definitions.task_details: value}
+
+    def tags(self, value: str) -> dict:
+        return {self.definitions.tags: value}
+
+
+class TagsAttributesPaths:
+    def __init__(self, definitions):
+        self.definitions = definitions
+
+    def name(self, value: str) -> dict:
+        return {self.definitions.name: value}
+
+    def created_by(self, value: str) -> dict:
+        return {self.definitions.created_by: value}
+
+    def assigned_to(self, value: str) -> dict:
+        return {self.definitions.assigned_to: value}
+
+
+class UsersAttributesPaths:
+    def __init__(self, definitions):
+        self.definitions = definitions
+
+    def name(self, value: str) -> dict:
+        return {self.definitions.name: value}
+
+    def assigned_to(self, value: int) -> dict:
+        return {self.definitions.assigned_to: value}

@@ -15,7 +15,7 @@ class TaskSchema:
         self.date_created = DateTime().curr_date
         self.time_created = DateTime().curr_time
         self.assigned_to = self.created_by
-        self.start_date_interval = ""
+        self.start_date_interval = self.date_created
         self.end_date_interval = ""
         self.prio = Priorities().normal
         self.status = Statuses().init
@@ -78,7 +78,7 @@ class TaskSchema:
 
     @task_details_text.setter
     def task_details_text(self, value):
-        self.task_details_text = value
+        self.task_details = value
 
     @property
     def hours_executable(self):
@@ -95,6 +95,14 @@ class TaskSchema:
     @task_tag.setter
     def task_tag(self, value):
         self.tag = value
+
+    @property
+    def task_priority(self):
+        return self.prio
+
+    @task_priority.setter
+    def task_priority(self, value:Priorities):
+        self.prio = value
 
     def to_dict(self):
         return {self.definitions.title: self.task_title,

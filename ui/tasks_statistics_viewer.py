@@ -1,6 +1,6 @@
 from PySide2 import QtWidgets, QtWebEngineWidgets, QtCore
 
-html_path = '/\\scratch\\interactive_gantt_chart.html'
+html_path = 'C:\\Users\\arsithra\\PycharmProjects\\LasyMe\\scratch\\interactive_gantt_chart.html'
 
 class TaskStatisticsBuild(QtWidgets.QWidget):
     def __init__(self, html_file, parent=None):

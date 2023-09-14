@@ -1,8 +1,8 @@
 from PySide2 import QtWidgets
 
-from ui.task_properties_editor import TaskPropertiesEditorBuild
-from ui.task_statistics_viewer import TaskStatisticsBuild
-from ui.task_tags_manager import TaskTagManagerBuild
+from ui.tasks_properties_editor import TaskPropertiesEditorCore
+from ui.tasks_statistics_viewer import TaskStatisticsBuild
+from ui.tasks_tags_manager import TaskTagManagerBuild
 
 html_path = '/\\scratch\\interactive_gantt_chart.html'
 
@@ -13,7 +13,7 @@ class TaskPropertiesTabsBuild(QtWidgets.QTabWidget):
 
         self.properties_wdg = QtWidgets.QWidget()
 
-        self.task_properties_wdg = TaskPropertiesEditorBuild()
+        self.task_properties_wdg = TaskPropertiesEditorCore()
         self.task_tag_manager_wdg = TaskTagManagerBuild()
         self.task_statistics_wdg = TaskStatisticsBuild(html_path)
 

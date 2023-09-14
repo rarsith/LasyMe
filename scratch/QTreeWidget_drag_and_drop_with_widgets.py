@@ -1,74 +1,72 @@
 import sys
-from PySide2.QtWidgets import QApplication, QMainWindow, QTreeWidget, QTreeWidgetItem, QWidget, QVBoxLayout, QPushButton
-from PySide2.QtCore import Qt, QMimeData
-from PySide2.QtGui import QDrag, QPixmap
+from PySide2.QtWidgets import QApplication, QTreeWidget, QTreeWidgetItem, QWidget, QVBoxLayout, QLabel, QPushButton
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QPixmap
 
 class CustomTreeWidget(QTreeWidget):
     def __init__(self):
         super().__init__()
+        self.setDragEnabled(True)
         self.setAcceptDrops(True)
-
-    def startDrag(self, supportedActions):
-        item = self.currentItem()
-        if item:
-            drag = QDrag(self)
-            mime_data = QMimeData()
-            mime_data.setText(item.text(0))  # You can set the data you want to transfer here
-            drag.setMimeData(mime_data)
-
-            # Create a pixmap of the item to display during drag
-            pixmap = QPixmap(item.sizeHint(0))
-            item.render(pixmap)
-
-            drag.setPixmap(pixmap)
-            drag.setHotSpot(pixmap.rect().center())
-            drag.exec_(Qt.CopyAction | Qt.MoveAction)
-
-    def dragEnterEvent(self, event):
-        if event.mimeData().hasText():
-            event.acceptProposedAction()
+        self.setColumnCount(3)
+        self.setHeaderLabels(["Column 1", "Column 2", "Column 3"])
 
     def dropEvent(self, event):
-        if event.mimeData().hasText():
-            item_text = event.mimeData().text()
-            new_item = QTreeWidgetItem([item_text])
+        destination_item = self.itemAt(event.pos())
+        source_item = self.currentItem()
 
-            # Customize the new item's properties if needed
-            # For example, you can set widgets in each column here
+        if destination_item and source_item:
+            if destination_item != source_item:
+                for col in range(self.columnCount()):
+                    source_widget_item = source_item.child(0, col)
+                    destination_widget_item = destination_item.child(0, col)
 
-            self.addTopLevelItem(new_item)
+                    if source_widget_item:
+                        destination_item.insertChild(0, source_widget_item.clone())
+                        del source_item
 
-class MainWindow(QMainWindow):
+                    if destination_widget_item:
+                        source_item.insertChild(0, destination_widget_item.clone())
+                        del destination_item
+
+class MainWidget(QWidget):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("Drag and Drop Items")
+        self.setGeometry(100, 100, 600, 400)
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
 
-        self.setWindowTitle("Drag and Drop Example")
+        self.tree_widget = CustomTreeWidget()
 
-        central_widget = QWidget()
-        layout = QVBoxLayout(central_widget)
+        # Create sample widgets for columns
+        widget_1 = QLabel("Widget 1")
+        widget_2 = QPushButton("Widget 2")
+        widget_3 = QLabel()
+        pixmap = QPixmap(50, 50)
+        pixmap.fill(Qt.red)
+        widget_3.setPixmap(pixmap)
 
-        self.tree_widget1 = CustomTreeWidget()
-        self.tree_widget2 = CustomTreeWidget()
+        # Create items with widgets
+        for i in range(3):
+            item = QTreeWidgetItem(self.tree_widget)
+            item.setText(0, f"Item {i}")
+            item.setText(1, f"Item {i}")
+            item.setText(2, f"Item {i}")
 
-        layout.addWidget(self.tree_widget1)
-        layout.addWidget(self.tree_widget2)
+            item.setFlags(item.flags() | Qt.ItemIsDragEnabled)
 
-        button = QPushButton("Add Item")
-        button.clicked.connect(self.add_item)
+            self.tree_widget.setItemWidget(item, 0, widget_1)
+            self.tree_widget.setItemWidget(item, 1, widget_2)
+            self.tree_widget.setItemWidget(item, 2, widget_3)
 
-        layout.addWidget(button)
+        self.layout.addWidget(self.tree_widget)
 
-        self.setCentralWidget(central_widget)
-
-    def add_item(self):
-        item_text = "New Item"
-        new_item = QTreeWidgetItem([item_text])
-        # Customize the new item's properties and widgets per column if needed
-
-        self.tree_widget1.addTopLevelItem(new_item)
+def main():
+    app = QApplication(sys.argv)
+    main_widget = MainWidget()
+    main_widget.show()
+    sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())
+    main()

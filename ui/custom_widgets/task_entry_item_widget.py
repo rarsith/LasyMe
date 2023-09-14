@@ -3,7 +3,7 @@ from common_utils.date_time import DateTime
 
 from operations.tdb_priorities import Priorities
 from operations.tdb_statuses import Statuses
-from operations.tiny_ops import TinyOps
+from operations.tiny_ops.tasks_ops import TinyOps
 
 
 class TaskProgressBarWDG(QtWidgets.QWidget):
@@ -25,15 +25,16 @@ class TaskProgressBarWDG(QtWidgets.QWidget):
 class TaskEntityWDG(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(TaskEntityWDG, self).__init__(parent)
+
         self.tops = TinyOps()
         self.create_widgets()
 
     def create_widgets(self):
         self.progress_bar = QtWidgets.QProgressBar()
-        self.progress_bar.setValue(20)
-        self.progress_bar.setMaximumHeight(20)
-        self.progress_bar.setMaximumWidth(10)
-        self.progress_bar.setOrientation(QtCore.Qt.Vertical)
+        self.progress_bar.setRange(0, 100)
+        self.progress_bar.setMaximumHeight(25)
+        self.progress_bar.setMaximumWidth(100)
+        self.progress_bar.setTextVisible(False)
 
         self.task_title_lb = QtWidgets.QLabel("This is a sample Task Title Text......................XXXXXXXX")
 
@@ -51,38 +52,62 @@ class TaskEntityWDG(QtWidgets.QWidget):
 
     def get_progress_bar_amount(self, task_id):
         start_date = self.tops.get_task_start_date(task_id)
-        print(start_date)
         end_date = self.tops.get_task_end_date(task_id)
-        current_time = DateTime().curr_date
+
         percentage_interval = DateTime().get_time_elapsed(start_day=start_date, end_day=end_date, percentage=True)
         self.progress_bar.setValue(int(percentage_interval))
+
+        progress_bar_curr_val = self.progress_bar.value()
+
+        if progress_bar_curr_val <= 20:
+            self.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
+            border-radius: 5px;
+            text-align: center;
+            background-color: rgba(33, 37, 43, 180);
+            color: black;}
+            QProgressBar::chunk {background-color: #FFD700;}""")
+        elif progress_bar_curr_val <= 30:
+            self.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
+            border-radius: 5px;
+            text-align: center;
+            background-color: rgba(33, 37, 43, 180);
+            color: black;}
+            QProgressBar::chunk {background-color: #00e1ff;}""")
+        else:
+            self.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
+            border-radius: 5px;
+            text-align: center;
+            background-color: rgba(33, 37, 43, 180);
+            color: black;}
+            QProgressBar::chunk {background-color: #ff3700;}""")
         return percentage_interval
 
     def get_task_title(self, task_id):
-        get_title = TinyOps().get_task_title(task_id=task_id)
+        get_title = self.tops.get_task_title(task_id=task_id)
         self.task_title_lb.setText(get_title)
 
     def get_task_status(self, task_id):
-        get_status = TinyOps().get_task_status(task_id=task_id)
+        get_status = self.tops.get_task_status(task_id=task_id)
         self.status_cb.setCurrentText(get_status)
 
     def get_task_prio(self, task_id):
-        get_prio = TinyOps().get_task_status(task_id=task_id)
+        get_prio = self.tops.get_task_prio(task_id=task_id)
         self.prio_cb.setCurrentText(get_prio)
 
 
-class TaskEntityCore():
+class TaskEntityCore(TaskEntityWDG):
     def __init__(self, parent=None):
         super(TaskEntityCore, self).__init__(parent)
 
+        self.create_connections()
 
+    def create_connections(self):
+        pass
 
 
 if __name__=="__main__":
     import sys
-    tops = TinyOps()
-    task_progress = tops.get_task_task_details(1)
-    print(task_progress)
+
 
 
     app = QtWidgets.QApplication(sys.argv)
