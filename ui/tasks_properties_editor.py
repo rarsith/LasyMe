@@ -2,7 +2,7 @@ from PySide2 import QtWidgets, QtCore
 from PySide2.QtCore import Slot
 from ui.custom_widgets.task_text_widget import CustomPlainTextEditWDG
 from operations.tdb_attributes_definitions import TaskAttributesDefinitions
-from operations.tdb_attributes_paths import TinyAttributesPaths
+from operations.tdb_attributes_paths import TasksAttributesPaths
 from operations.tiny_ops.tasks_ops import TinyOps
 from ui.custom_widgets.task_tags_widget import TaskTagsWDG
 
@@ -50,9 +50,9 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
         dates_layout.addLayout(start_date_layout)
         dates_layout.addLayout(end_date_layout)
 
-        misc_layout = QtWidgets.QFormLayout()
-        misc_layout.addRow("User", self.assigned_to_cb)
-        misc_layout.addRow("Tags", self.set_tags_wdg)
+        misc_layout = QtWidgets.QVBoxLayout()
+        misc_layout.addWidget(self.assigned_to_cb)
+        misc_layout.addWidget(self.set_tags_wdg)
 
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.addLayout(win_layout)
@@ -67,7 +67,7 @@ class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
 
         self.doc_attrib = TaskAttributesDefinitions()
         self.tops = TinyOps()
-        self.task_attr_paths = TinyAttributesPaths(self.doc_attrib)
+        self.task_attr_paths = TasksAttributesPaths(self.doc_attrib)
 
         self.create_connections()
 
@@ -92,6 +92,8 @@ class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
         self.tops.update_task(int(get_current_id), self.task_attr_paths.assigned_to(get_assigned_to))
         self.tops.update_task(int(get_current_id), self.task_attr_paths.tags(get_tags))
 
+        self.set_tags_wdg.task_tags_lw.clear()
+
 
     def update_task_briefing_text(self):
         get_current_title = self.text_viewer_ptx.get_title()
@@ -105,7 +107,7 @@ class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
         self.load_task_text(received_task_doc["task_emit"])
         self.load_dates(received_task_doc["task_emit"])
         self.load_user(received_task_doc["task_emit"])
-        self.load_tag(received_task_doc["task_emit"])
+        self.load_tags(received_task_doc["task_emit"])
         self.load_task_id(received_task_doc["task_id_emit"])
 
     def get_full_text_from_task_doc(self, task_doc: dict):
@@ -134,10 +136,11 @@ class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
         self.assigned_to_cb.clear()
         self.assigned_to_cb.addItem(user)
 
-    def load_tag(self, task_doc: dict):
-        tag = task_doc[self.doc_attrib.tags]
-        self.set_tags_wdg.task_tags_cb.clear()
-        self.set_tags_wdg.task_tags_cb.addItem(tag)
+    def load_tags(self, task_doc: dict):
+        tags = task_doc[self.doc_attrib.tags]
+        self.set_tags_wdg.task_tags_lw.clear()
+        self.set_tags_wdg.populate_list(tags)
+
 
     def load_task_id(self, task_id):
         self.record_current_sel_task.setText(task_id)
@@ -164,10 +167,10 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = TaskPropertiesEditorCore()
 
-    reformatted_text = test_dialog.get_full_text_from_task_doc(task_sample)
-    test_dialog.load_task_text(reformatted_text)
-    test_dialog.load_dates(task_sample)
-    test_dialog.load_user(task_sample)
+    # reformatted_text = test_dialog.get_full_text_from_task_doc(task_sample)
+    # test_dialog.load_task_text(reformatted_text)
+    # test_dialog.load_dates(task_sample)
+    # test_dialog.load_user(task_sample)
     # test_dialog.load_tag(task_sample)
 
     test_dialog.show()

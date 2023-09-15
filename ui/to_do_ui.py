@@ -5,6 +5,7 @@ from ui.tasks_viewer import ExistingTasksViewerCore
 from ui.tasks_properties_tabs import TaskPropertiesTabsBuild
 from ui.tasks_user_input import InputTaskBuildCore
 from ui.tasks_user_input_preview import TaskPreviewPropertiesCore
+from ui.tasks_viewer_tag_filter import TasksViewerTagFilterCore
 
 
 class ToDoMeMainWDG(QtWidgets.QWidget):
@@ -19,14 +20,21 @@ class ToDoMeMainWDG(QtWidgets.QWidget):
         self.create_connections()
 
     def create_widgets(self):
+        self.tasks_tags_filter_viewer_wdg = TasksViewerTagFilterCore()
         self.tasks_viewer_wdg = ExistingTasksViewerCore()
         self.task_input_wdg = InputTaskBuildCore()
         self.task_preview_properties_wdg = TaskPreviewPropertiesCore()
         self.task_properties_tabs_wdg = TaskPropertiesTabsBuild()
 
     def create_layout(self):
+        tags_viewer_layout = QtWidgets.QHBoxLayout()
+        tags_viewer_layout.addWidget(self.tasks_tags_filter_viewer_wdg)
+        tags_viewer_layout.addWidget(self.tasks_viewer_wdg)
+        tags_viewer_layout.setContentsMargins(0,0,0,0)
+
+
         viewer_and_input_layout = QtWidgets.QVBoxLayout()
-        viewer_and_input_layout.addWidget(self.tasks_viewer_wdg)
+        viewer_and_input_layout.addLayout(tags_viewer_layout)
         viewer_and_input_layout.addWidget(self.task_preview_properties_wdg)
         viewer_and_input_layout.addWidget(self.task_input_wdg)
 
@@ -50,6 +58,18 @@ class ToDoMeMainWDG(QtWidgets.QWidget):
         self.tasks_viewer_wdg.task_document_retrieval.connect(self.task_properties_tabs_wdg.task_properties_wdg.populate_all_widgets)
         self.task_properties_tabs_wdg.task_properties_wdg.save_btn.clicked.connect(self.tasks_viewer_wdg.populate_tasks)
         self.task_properties_tabs_wdg.task_properties_wdg.update_btn.clicked.connect(self.tasks_viewer_wdg.populate_tasks)
+
+        self.task_properties_tabs_wdg.task_tag_manager_wdg.create_tag_btn.clicked.\
+            connect(self.tasks_tags_filter_viewer_wdg.update_tags)
+
+        self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked.\
+            connect(self.tasks_tags_filter_viewer_wdg.update_tags)
+
+        self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked.\
+            connect(self.tasks_tags_filter_viewer_wdg.update_tags)
+
+        self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked. \
+            connect(self.tasks_tags_filter_viewer_wdg.update_tags)
 
     def set_preview_title(self):
         title_in = self.task_input_wdg.get_title()
@@ -93,7 +113,14 @@ class ToDoMeMainWDG(QtWidgets.QWidget):
 
 
 if __name__ == "__main__":
+    qss_style_file = "stylesheets/dark_orange_style.qss"
+
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = ToDoMeMainWDG()
     test_dialog.show()
+
+    with open(qss_style_file, "r") as f:
+        _style = f.read()
+        app.setStyleSheet(_style)
+
     sys.exit(app.exec_())

@@ -7,4 +7,4 @@ class Statuses:
         self.followup = "FollowUp"
     @property
     def all_statuses(self):
-        return [self.init, self.in_progress, self.done, self.blocked, self.followup]
+        return [self.init, self.in_progress, self.blocked, self.followup, self.done]

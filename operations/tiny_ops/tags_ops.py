@@ -34,4 +34,6 @@ class TagsOps:
 
 
 if __name__ == "__main__":
-    pass
+    cc = TagsOps()
+    docs = cc.get_all_documents()
+    print(docs)

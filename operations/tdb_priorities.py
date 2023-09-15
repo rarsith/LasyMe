@@ -4,8 +4,8 @@ class Priorities:
         self.normal = "Normal"
         self.medium = "Medium"
         self.high = "High"
-        self.critical = "CRITICAL"
+        self.critical = "Critical"
 
     @property
     def all_priorities(self):
-        return [self.low ,self.normal, self.medium, self.high, self.critical]
+        return [self.critical, self.high, self.medium, self.normal, self.low]

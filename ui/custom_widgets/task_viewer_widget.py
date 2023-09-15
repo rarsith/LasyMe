@@ -14,6 +14,8 @@ class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
         self.setAcceptDrops(True)
         self.setDragDropMode(QtWidgets.QTreeWidget.InternalMove)
         self.setDefaultDropAction(QtCore.Qt.MoveAction)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)  # Disable selection highlighting
+        # self.setFocusPolicy(QtCore.Qt.NoFocus)
 
         # self.setRootIsDecorated(False)
 

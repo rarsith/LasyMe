@@ -98,6 +98,11 @@ class InputTaskBuildCore(InputTaskBuild):
         self.set_task_details()
         self.get_sel_task_end_date()
         complete_doc = self.task_schema.to_dict()
+        has_content = self.task_input_ptx.toPlainText()
+        if not has_content.strip():
+            print("No task details found. Please insert text")
+            return
+
         self.tops.insert_task(document=complete_doc)
         self.task_input_ptx.clear()
 

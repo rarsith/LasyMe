@@ -10,17 +10,28 @@ class TaskProgressBarWDG(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(TaskProgressBarWDG, self).__init__(parent)
 
-        self.ui_progress_bar_wdg()
+        self.create_widgets()
+        self.create_layout()
 
-    def ui_progress_bar_wdg(self):
-        widget_item = QtWidgets.QProgressBar()
+    def create_widgets(self):
+        self.progress_bar = QtWidgets.QProgressBar()
+        # self.progress_bar.setRange(0, 100)
+        self.progress_bar.setMaximumHeight(20)
+        self.progress_bar.setMaximumWidth(150)
+        # self.progress_bar.setAlignment(QtCore.Qt.AlignCenter)
+        self.progress_bar.setTextVisible(False)
 
-        # widget_item.setMaximumHeight(10)
-        widget_item.setTextVisible(False)
-        widget_item.setValue(50)
-        widget_item.setOrientation(QtCore.Qt.Vertical)
 
+        self.remaining_days_lb = QtWidgets.QLabel()
+        self.remaining_days_lb.setMinimumWidth(20)
+        self.remaining_days_lb.setMinimumHeight(10)
+        self.remaining_days_lb.setAlignment(QtCore.Qt.AlignCenter)
 
+    def create_layout(self):
+        main_layout = QtWidgets.QHBoxLayout(self)
+        main_layout.addWidget(self.progress_bar)
+        main_layout.addWidget(self.remaining_days_lb)
+        main_layout.setContentsMargins(0,0,0,0)
 
 class TaskEntityWDG(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -30,11 +41,12 @@ class TaskEntityWDG(QtWidgets.QWidget):
         self.create_widgets()
 
     def create_widgets(self):
-        self.progress_bar = QtWidgets.QProgressBar()
-        self.progress_bar.setRange(0, 100)
-        self.progress_bar.setMaximumHeight(25)
-        self.progress_bar.setMaximumWidth(100)
-        self.progress_bar.setTextVisible(False)
+        self.prog_bar = TaskProgressBarWDG()
+        # self.progress_bar.setRange(0, 100)
+        # self.progress_bar.setMaximumHeight(25)
+        # self.progress_bar.setMaximumWidth(150)
+        # self.progress_bar.setAlignment(QtCore.Qt.AlignCenter)
+        # self.progress_bar.setTextVisible(False)
 
         self.task_title_lb = QtWidgets.QLabel("This is a sample Task Title Text......................XXXXXXXX")
 
@@ -46,35 +58,34 @@ class TaskEntityWDG(QtWidgets.QWidget):
 
         self.edit_btn = QtWidgets.QPushButton("Edit")
         self.delete_btn = QtWidgets.QPushButton("X")
-        self.heat_bar_lb = QtWidgets.QLabel()
-
-        self.heat_bar_lb.setStyleSheet("background-color: lightgreen")
 
     def get_progress_bar_amount(self, task_id):
         start_date = self.tops.get_task_start_date(task_id)
         end_date = self.tops.get_task_end_date(task_id)
 
+        time_left_interval = DateTime().today_to_end_day(end_day=end_date)
         percentage_interval = DateTime().get_time_elapsed(start_day=start_date, end_day=end_date, percentage=True)
-        self.progress_bar.setValue(int(percentage_interval))
+        self.prog_bar.progress_bar.setValue(int(percentage_interval))
+        self.prog_bar.remaining_days_lb.setText(str(time_left_interval))
 
-        progress_bar_curr_val = self.progress_bar.value()
+        progress_bar_curr_val = self.prog_bar.progress_bar.value()
 
         if progress_bar_curr_val <= 20:
-            self.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
+            self.prog_bar.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
             border-radius: 5px;
             text-align: center;
             background-color: rgba(33, 37, 43, 180);
             color: black;}
             QProgressBar::chunk {background-color: #FFD700;}""")
         elif progress_bar_curr_val <= 30:
-            self.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
+            self.prog_bar.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
             border-radius: 5px;
             text-align: center;
             background-color: rgba(33, 37, 43, 180);
             color: black;}
             QProgressBar::chunk {background-color: #00e1ff;}""")
         else:
-            self.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
+            self.prog_bar.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
             border-radius: 5px;
             text-align: center;
             background-color: rgba(33, 37, 43, 180);

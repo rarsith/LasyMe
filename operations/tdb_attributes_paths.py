@@ -1,4 +1,4 @@
-class TinyAttributesPaths:
+class TasksAttributesPaths:
     def __init__(self, definitions):
         self.definitions = definitions
 
