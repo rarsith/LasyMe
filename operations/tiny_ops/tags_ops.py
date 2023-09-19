@@ -1,11 +1,12 @@
+from tinydb import TinyDB, Query
 from operations.tdb_manager import TinyDBManager
 from operations.connection import TagsDbPath, TAGS_DATABASE_NAME
 
 
 class TagsOps:
     def __init__(self):
-        self.db = TinyDBManager(TagsDbPath)
-        self.table = self.db.get_table(TAGS_DATABASE_NAME)
+        self.db = TinyDB(TagsDbPath)
+        self.table = self.db.table(TAGS_DATABASE_NAME)
 
     def insert_tag(self, document):
         test = self.table.insert(document)

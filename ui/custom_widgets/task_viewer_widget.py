@@ -5,7 +5,7 @@ class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
     def __init__(self, parent=None):
         super(ExitingTasksViewerWDG, self).__init__(parent)
 
-        self.widget_width = 800
+        self.widget_width = 650
         self.create_widgets()
 
     def create_widgets(self):
@@ -15,12 +15,14 @@ class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
         self.setDragDropMode(QtWidgets.QTreeWidget.InternalMove)
         self.setDefaultDropAction(QtCore.Qt.MoveAction)
         self.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)  # Disable selection highlighting
-        # self.setFocusPolicy(QtCore.Qt.NoFocus)
+        # self.setSelectionMode(QtWidgets.QTreeWidget.SingleSelection)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
 
         # self.setRootIsDecorated(False)
 
         self.setDisabled(False)
         self.setMinimumWidth(self.widget_width)
+        # self.setMaximumWidth(self.widget_width)
 
         self.widget_columns_names = ["Heat", "Task Title", "Status", "Prio", "Delete", "ID"]
         self.setColumnCount(len(self.widget_columns_names))

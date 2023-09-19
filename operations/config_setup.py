@@ -6,6 +6,7 @@ class ConfigAttr:
         self.update_interval = "update_interval"
         self.start_work_day = "start_work_day"
         self.end_work_day = "end_work_day"
+        self.time_per_day_allocation = "time_per_day_allocation"
 
 
 class ConfigManager:

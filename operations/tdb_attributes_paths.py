@@ -11,6 +11,9 @@ class TasksAttributesPaths:
     def task_title(self, value: str) -> dict:
         return {self.definitions.title: value}
 
+    def task_created_by(self, value: str) -> dict:
+        return {self.definitions.created_by: value}
+
     def assigned_to(self, value: str) -> dict:
         return {self.definitions.assigned_to: value}
 

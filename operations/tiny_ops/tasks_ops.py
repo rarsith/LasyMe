@@ -1,3 +1,5 @@
+
+from tinydb import TinyDB, Query
 from operations.tdb_attributes_definitions import TaskAttributesDefinitions
 from operations.connection import TasksDbPath, TASKS_DATABASE_NAME
 from operations.tdb_manager import TinyDBManager
@@ -5,8 +7,9 @@ from operations.tdb_manager import TinyDBManager
 
 class TinyOps:
     def __init__(self):
-        self.db = TinyDBManager(TasksDbPath)
-        self.table = self.db.get_table(TASKS_DATABASE_NAME)
+        self.db = TinyDB(TasksDbPath)
+        self.table = self.db.table(TASKS_DATABASE_NAME)
+        self.query = Query()
 
     def insert_task(self, document: dict):
         test = self.table.insert(document)
@@ -32,6 +35,63 @@ class TinyOps:
         result = self.table.get(doc_id=task_id)
 
         return result
+
+    def get_docs_by_id(self, list_of_ids):
+        retrieved_documents = {}
+        for task_id in list_of_ids:
+            document = self.table.get(doc_id=task_id)
+            if document:
+                retrieved_documents[task_id] = (document)
+        return retrieved_documents
+
+    def get_docs_by_tags(self, tag_to_search, remove=False):
+        documents = self.table.search(self.query.tags.any(tag_to_search))
+        if remove:
+            for document in documents:
+                if tag_to_search in document['tags']:
+                    document['tags'].remove(tag_to_search)
+                    self.update_task(document.doc_id, {'tags': document['tags']})
+
+                print(document.doc_id)
+
+        return documents
+
+    def get_docs_by_prio(self, prio_to_search):
+        full_docs = {}
+        documents = self.table.search(self.query.prio.any(prio_to_search))
+        for document in documents:
+            full_docs[document.doc_id] = document
+
+        return full_docs
+
+    def get_docs_by_multiple_keys(self, criteria: dict):
+        full_docs = {}
+        conditions = []
+        if len(criteria) != 0:
+            for key, value in criteria.items():
+                if key == "tags":
+                    condition = getattr(self.query, key).any(value)
+
+                elif isinstance(value, list):
+                    condition = getattr(self.query, key).one_of(value)
+
+                else:
+                    condition = getattr(self.query, key)==value
+                conditions.append(condition)
+
+            combined_condition = conditions[0]
+
+            for condition in conditions[1:]:
+                combined_condition = combined_condition & condition
+
+            result = self.table.search(combined_condition)
+
+            for document in result:
+                full_docs[document.doc_id] = document
+
+        print (__name__, "Ran And Returns: ", full_docs.keys(),"\n", "With Conditions: ", conditions)
+        return full_docs
+
 
     def get_task_parent(self, task_id):
         result = self.get_doc_by_id(task_id=task_id)
@@ -92,6 +152,8 @@ class TinyOps:
 
 
 if __name__ == "__main__":
+    import pprint
+
     tops = TinyOps()
     # print(tops)
     # attr_def = TaskAttributesDefinitions()
@@ -106,16 +168,28 @@ if __name__ == "__main__":
     # print(new_id)
 
     # tops.update_task(new_id, tiny_attr.assigned_to(value="hellooRA"))
+    docs_ids = [4, 6, 7, 2, 3, 8, 9, 10, 5]
 
-    # all_docum = tops.get_all_documents(ids=True)
-    # pprint.pprint(all_docum)
+    tag = "important things"
+
+    big_ass_doc = {"1": {"task_title": "Daily Norm module", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:47", "assigned_to": "arsithra", "start_date_interval": "2023-09-17", "end_date_interval": "2023-09-23", "hours_allocated": "90", "prio": "Critical", "status": "BLOCKED", "active": True, "task_details": ["", "Need to create the Daily module for the app to allocate portions per day"], "tags": ["LASY_ME"]}, "2": {"task_title": "Create Progress bar to illustrate the norm foe rall tasks per day", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:47", "assigned_to": "arsithra", "start_date_interval": "2023-09-17", "end_date_interval": "2023-09-23", "hours_allocated": "90", "prio": "Critical", "status": "BLOCKED", "active": True, "task_details": [], "tags": ["LASY_ME"]}, "3": {"task_title": "Create App installer", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:47", "assigned_to": "arsithra", "start_date_interval": "2023-09-17", "end_date_interval": "2023-09-30", "hours_allocated": "90", "prio": "High", "status": "BLOCKED", "active": True, "task_details": [], "tags": ["LASY_ME"]}, "4": {"task_title": "Create App COnfiguration Manager", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:47", "assigned_to": "arsithra", "start_date_interval": "2023-09-17", "end_date_interval": "2023-09-30", "hours_allocated": "90", "prio": "Low", "status": "BLOCKED", "active": True, "task_details": [], "tags": ["LASY_ME"]}, "5": {"task_title": "Create DB backup Manager", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:47", "assigned_to": "arsithra", "start_date_interval": "2023-09-17", "end_date_interval": "2023-09-30", "hours_allocated": "90", "prio": "Normal", "status": "BLOCKED", "active": True, "task_details": [], "tags": ["LASY_ME"]}, "6": {"task_title": "Send Mikkel Jobs Descri[tion to philipp", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:47", "assigned_to": "arsithra", "start_date_interval": "2023-09-15", "end_date_interval": "2023-09-19", "hours_allocated": "30", "prio": "Critical", "status": "DONE", "active": True, "task_details": [], "tags": ["department"]}, "7": {"task_title": "Get the car to the service", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:55", "assigned_to": "arsithra", "start_date_interval": "2023-09-17", "end_date_interval": "2023-09-21", "hours_allocated": "90", "prio": "Normal", "status": "Init", "active": True, "task_details": [], "tags": ["personal"]}}
+
+    key_to = {'tags': ['department']}
+
+    cc = tops.get_docs_by_multiple_keys(criteria=key_to)
+
+    # all_docum = tops.get_docs_by_tags(tag, remove=True)
+    pprint.pprint(cc)
     #
-    doc_id = 1
+
+    # get_all_docs = tops.get_all_documents()
+    # pprint.pprint(get_all_docs)
+    # doc_id = 1
 
     # tops.delete_task(task_id=doc_id)
 
-    result_value = tops.get_task_end_date(task_id=doc_id)
-    print(result_value)
+    # result_value = tops.get_task_end_date(task_id=doc_id)
+    # print(result_value)
 
 
 

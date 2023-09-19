@@ -4,13 +4,16 @@ from operations.schemas.task_schema import TaskSchema
 from operations.tdb_attributes_definitions import TaskAttributesDefinitions
 from operations.tiny_ops.tasks_ops import TinyOps
 from ui.custom_widgets.task_text_widget import CustomPlainTextEditWDG
+from common_utils.date_time import DateTime
+import getpass
 
 
 class InputTaskBuild(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(InputTaskBuild, self).__init__(parent)
 
-        self.setMaximumHeight(170)
+        self.setMaximumHeight(180)
+        # self.setMaximumWidth(600)
 
         self.create_widgets()
         self.create_layout()
@@ -36,6 +39,7 @@ class InputTaskBuild(QtWidgets.QWidget):
         self.set_parent_btn = QtWidgets.QPushButton("Set Parent...")
 
         self.create_task_btn = QtWidgets.QPushButton("Create")
+        self.create_task_btn.setMinimumHeight(30)
 
     def create_layout(self):
         calendar_layout = QtWidgets.QFormLayout()
@@ -79,7 +83,6 @@ class InputTaskBuildCore(InputTaskBuild):
         self.tasks_key_definitions = TaskAttributesDefinitions()
         self.task_schema = TaskSchema(self.tasks_key_definitions)
 
-
     def create_connections(self):
         self.create_task_btn.clicked.connect(self.create_task_document)
         self.thirty_min_btn.clicked.connect(self.set_time_thirty)
@@ -97,6 +100,11 @@ class InputTaskBuildCore(InputTaskBuild):
         self.set_task_title()
         self.set_task_details()
         self.get_sel_task_end_date()
+        self.task_schema.created_by_user = getpass.getuser()
+        self.task_schema.datetime_created_at = DateTime().date_and_time
+        self.task_schema.date_created_at = DateTime().curr_date
+        self.task_schema.time_created_at = DateTime().curr_time
+        self.task_schema.start_interval = DateTime().curr_date
         complete_doc = self.task_schema.to_dict()
         has_content = self.task_input_ptx.toPlainText()
         if not has_content.strip():
@@ -105,6 +113,7 @@ class InputTaskBuildCore(InputTaskBuild):
 
         self.tops.insert_task(document=complete_doc)
         self.task_input_ptx.clear()
+        self.end_date.setDateTime(QtCore.QDateTime.currentDateTime())
 
     def set_time_thirty(self):
         duration_value = "30"

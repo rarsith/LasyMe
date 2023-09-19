@@ -1,5 +1,6 @@
 from PySide2 import QtWidgets, QtCore
 from operations.tiny_ops.tags_ops import TagsOps
+from operations.tiny_ops.tasks_ops import TinyOps
 from operations.schemas.tags_schema import TagsSchema
 from operations.tdb_attributes_definitions import TagsAttributesDefinitions
 
@@ -14,7 +15,6 @@ class TaskTagManagerBuild(QtWidgets.QWidget):
     def create_widgets(self):
         self.tag_viewer_lw = QtWidgets.QListWidget()
         self.tag_viewer_lw.setFocusPolicy(QtCore.Qt.NoFocus)
-
 
         self.tag_input_le = QtWidgets.QLineEdit()
         self.tag_input_le.setPlaceholderText("New Tag Name")
@@ -46,6 +46,7 @@ class TaskTagManagerCore(TaskTagManagerBuild):
         self.tag_key_definitions = TagsAttributesDefinitions()
         self.tag_schema = TagsSchema(self.tag_key_definitions)
         self.taops = TagsOps()
+        self.tops = TinyOps()
 
         self.populate_tag_view()
         self.create_connections()
@@ -59,15 +60,28 @@ class TaskTagManagerCore(TaskTagManagerBuild):
 
     def create_new_tag(self):
         self.set_tag_name()
+        exitings_tags = self.get_current_items()
         complete_doc = self.tag_schema.to_dict()
         has_content = self.tag_input_le.text()
         if not has_content.strip():
-            print ("No Tag Name specified. Please enter name")
+            print("No Tag Name specified. Please enter name")
+            return
+        elif has_content in exitings_tags:
+            print("Tag already exists, choose another name")
             return
 
-        self.taops.insert_tag(complete_doc)
-        self.tag_input_le.clear()
-        self.refresh_all()
+        else:
+            self.taops.insert_tag(complete_doc)
+            self.tag_input_le.clear()
+            self.refresh_all()
+
+    def get_current_items(self):
+        items_names = []
+        for index in range(self.tag_viewer_lw.count()):
+            item = self.tag_viewer_lw.item(index)
+            item_name = item.text()
+            items_names.append(item_name)
+        return items_names
 
     def set_tag_name(self):
         get_tag_name = self.tag_input_le.text()
@@ -75,8 +89,12 @@ class TaskTagManagerCore(TaskTagManagerBuild):
 
     def delete_selected_tag(self):
         tag_id = self.tag_viewer_lw.currentItem().data(1)
+        get_tag_name = self.taops.get_tag_by_id(tag_id)
         self.taops.delete_tag(tag_id)
+        self.tops.get_docs_by_tags(get_tag_name["name"], remove=True)
+
         self.refresh_all()
+
 
     def export_tags(self):
         pass

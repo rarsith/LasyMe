@@ -4,20 +4,33 @@ import calendar
 
 class DateTime(object):
     def __init__(self):
-        self.time_now = datetime.now()
         self.date_format = "%Y-%m-%d"
         self.time_format = "%H:%M"
+        self.date_and_time_format = '%Y-%m-%d %H:%M:%S:%f'
+
+    @property
+    def get_time_now(self):
+        now = datetime.now()
+        return now
+
+    @property
+    def date_and_time(self):
+        now = datetime.now()
+        return now.strftime(self.date_and_time_format)
 
     @property
     def curr_time(self):
-        return self.time_now.strftime(self.time_format)
+        now = datetime.now()
+        return now.strftime(self.time_format)
 
     @property
     def curr_date(self):
-        return self.time_now.strftime(self.date_format)
+        now = datetime.now()
+        return now.strftime(self.date_format)
 
     def today_to_end_day(self, end_day: str):
-        today = self.time_now.date()
+        now = datetime.now()
+        today = now.date()
         end_day_to_datetime = datetime.strptime(end_day, self.date_format).date()
         days_left = end_day_to_datetime - today
 
@@ -31,11 +44,12 @@ class DateTime(object):
         return interval_interval.days
 
     def get_time_elapsed(self, start_day: str, end_day: str, percentage=False, to_hours=False):
+        now = datetime.now()
         start = datetime.strptime(start_day, self.date_format).date()
         total_time = self.start_to_end_day(start_day=start_day, end_day=end_day)
         time_left = self.today_to_end_day(end_day=end_day)
-        today = self.time_now.date()
-        today_hour = self.time_now.time()
+        today = now.date()
+        today_hour = now.time()
 
         elapsed = today - start
 

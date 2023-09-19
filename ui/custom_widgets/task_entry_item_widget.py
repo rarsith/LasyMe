@@ -15,15 +15,12 @@ class TaskProgressBarWDG(QtWidgets.QWidget):
 
     def create_widgets(self):
         self.progress_bar = QtWidgets.QProgressBar()
-        # self.progress_bar.setRange(0, 100)
         self.progress_bar.setMaximumHeight(20)
         self.progress_bar.setMaximumWidth(150)
-        # self.progress_bar.setAlignment(QtCore.Qt.AlignCenter)
         self.progress_bar.setTextVisible(False)
 
-
         self.remaining_days_lb = QtWidgets.QLabel()
-        self.remaining_days_lb.setMinimumWidth(20)
+        self.remaining_days_lb.setMinimumWidth(10)
         self.remaining_days_lb.setMinimumHeight(10)
         self.remaining_days_lb.setAlignment(QtCore.Qt.AlignCenter)
 
@@ -31,24 +28,22 @@ class TaskProgressBarWDG(QtWidgets.QWidget):
         main_layout = QtWidgets.QHBoxLayout(self)
         main_layout.addWidget(self.progress_bar)
         main_layout.addWidget(self.remaining_days_lb)
-        main_layout.setContentsMargins(0,0,0,0)
+        main_layout.setContentsMargins(0, 2, 0, 2)
 
 class TaskEntityWDG(QtWidgets.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, task_id, parent=None):
         super(TaskEntityWDG, self).__init__(parent)
 
+        self.task_id = task_id
         self.tops = TinyOps()
         self.create_widgets()
 
     def create_widgets(self):
         self.prog_bar = TaskProgressBarWDG()
-        # self.progress_bar.setRange(0, 100)
-        # self.progress_bar.setMaximumHeight(25)
-        # self.progress_bar.setMaximumWidth(150)
-        # self.progress_bar.setAlignment(QtCore.Qt.AlignCenter)
-        # self.progress_bar.setTextVisible(False)
 
-        self.task_title_lb = QtWidgets.QLabel("This is a sample Task Title Text......................XXXXXXXX")
+        self.task_title_lb = QtWidgets.QLabel("-----------")
+        self.task_title_lb.setMinimumHeight(20)
+        self.task_title_lb.setMaximumHeight(20)
 
         self.status_cb = QtWidgets.QComboBox()
         self.status_cb.addItems(Statuses().all_statuses)
@@ -58,10 +53,19 @@ class TaskEntityWDG(QtWidgets.QWidget):
 
         self.edit_btn = QtWidgets.QPushButton("Edit")
         self.delete_btn = QtWidgets.QPushButton("X")
+        self.delete_btn.setStyleSheet("""QPushButton 
+        {
+        border: 1px solid rgba(33, 37, 43, 180);
+        border-radius: 5px;
+        text-align: center;
+        background-color: rgba(165, 42, 42, 180);
+        color: #b1b1b1;
+        }""")
+        self.delete_btn.setMaximumWidth(20)
 
-    def get_progress_bar_amount(self, task_id):
-        start_date = self.tops.get_task_start_date(task_id)
-        end_date = self.tops.get_task_end_date(task_id)
+    def get_progress_bar_amount(self):
+        start_date = self.tops.get_task_start_date(self.task_id)
+        end_date = self.tops.get_task_end_date(self.task_id)
 
         time_left_interval = DateTime().today_to_end_day(end_day=end_date)
         percentage_interval = DateTime().get_time_elapsed(start_day=start_date, end_day=end_date, percentage=True)
@@ -76,33 +80,50 @@ class TaskEntityWDG(QtWidgets.QWidget):
             text-align: center;
             background-color: rgba(33, 37, 43, 180);
             color: black;}
-            QProgressBar::chunk {background-color: #FFD700;}""")
-        elif progress_bar_curr_val <= 30:
+            QProgressBar::chunk {background-color: #335A84;}""")
+        elif progress_bar_curr_val <= 40:
             self.prog_bar.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
             border-radius: 5px;
             text-align: center;
             background-color: rgba(33, 37, 43, 180);
             color: black;}
-            QProgressBar::chunk {background-color: #00e1ff;}""")
+            QProgressBar::chunk {background-color: #1b8a5a;}""")
+
+        elif progress_bar_curr_val <= 60:
+            self.prog_bar.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
+            border-radius: 5px;
+            text-align: center;
+            background-color: rgba(33, 37, 43, 180);
+            color: black;}
+            QProgressBar::chunk {background-color: #fbb021;}""")
+
+        elif progress_bar_curr_val <= 80:
+            self.prog_bar.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
+            border-radius: 5px;
+            text-align: center;
+            background-color: rgba(33, 37, 43, 180);
+            color: black;}
+            QProgressBar::chunk {background-color: #f68838;}""")
+
         else:
             self.prog_bar.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
             border-radius: 5px;
             text-align: center;
             background-color: rgba(33, 37, 43, 180);
             color: black;}
-            QProgressBar::chunk {background-color: #ff3700;}""")
+            QProgressBar::chunk {background-color: #ee3e32;}""")
         return percentage_interval
 
-    def get_task_title(self, task_id):
-        get_title = self.tops.get_task_title(task_id=task_id)
+    def get_task_title(self):
+        get_title = self.tops.get_task_title(task_id=self.task_id)
         self.task_title_lb.setText(get_title)
 
-    def get_task_status(self, task_id):
-        get_status = self.tops.get_task_status(task_id=task_id)
+    def get_task_status(self):
+        get_status = self.tops.get_task_status(task_id=self.task_id)
         self.status_cb.setCurrentText(get_status)
 
-    def get_task_prio(self, task_id):
-        get_prio = self.tops.get_task_prio(task_id=task_id)
+    def get_task_prio(self):
+        get_prio = self.tops.get_task_prio(task_id=self.task_id)
         self.prio_cb.setCurrentText(get_prio)
 
 
@@ -118,8 +139,6 @@ class TaskEntityCore(TaskEntityWDG):
 
 if __name__=="__main__":
     import sys
-
-
 
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = TaskEntityWDG()

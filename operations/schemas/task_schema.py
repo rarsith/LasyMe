@@ -11,11 +11,12 @@ class TaskSchema:
 
         self.parent = "root"
         self.title = "-- no title --"
-        self.created_by = getpass.getuser()
-        self.date_created = DateTime().curr_date
-        self.time_created = DateTime().curr_time
-        self.assigned_to = self.created_by
-        self.start_date_interval = self.date_created
+        self.created_by = ""
+        self.date_created = ""
+        self.time_created = ""
+        self.datetime_created = ""
+        self.assigned_to = ""
+        self.start_date_interval = ""
         self.end_date_interval = ""
         self.prio = Priorities().normal
         self.status = Statuses().init
@@ -47,6 +48,30 @@ class TaskSchema:
     @created_by_user.setter
     def created_by_user(self, value):
         self.created_by = value
+
+    @property
+    def date_created_at(self):
+        return self.date_created
+
+    @date_created_at.setter
+    def date_created_at(self, value):
+        self.date_created = value
+
+    @property
+    def time_created_at(self):
+        return self.time_created
+
+    @time_created_at.setter
+    def time_created_at(self, value):
+        self.time_created = value
+
+    @property
+    def datetime_created_at(self):
+        return self.datetime_created
+
+    @datetime_created_at.setter
+    def datetime_created_at(self, value):
+        self.datetime_created = value
 
     @property
     def assigned_to_user(self):
@@ -110,6 +135,7 @@ class TaskSchema:
                 self.definitions.created_by: self.created_by,
                 self.definitions.date_created: self.date_created,
                 self.definitions.time_created: self.time_created,
+                self.definitions.datetime_created: self.datetime_created,
                 self.definitions.assigned_to: self.assigned_to,
                 self.definitions.start_date_interval: self.start_date_interval,
                 self.definitions.end_date_interval: self.end_date_interval,

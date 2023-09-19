@@ -1,7 +1,10 @@
-from PySide2 import QtWidgets
+from PySide2 import QtWidgets, QtCore
+
+
 from operations.tiny_ops.tags_ops import TagsOps
 from operations.schemas.tags_schema import TagsSchema
 from operations.tdb_attributes_definitions import TagsAttributesDefinitions
+from envars.envars import Envars
 
 
 class TagFilterButtonWDG(QtWidgets.QPushButton):
@@ -33,12 +36,10 @@ class TasksViewerTagFilterBuild(QtWidgets.QWidget):
 
 
 class TasksViewerTagFilterCore(TasksViewerTagFilterBuild):
+    tag_button_info = QtCore.Signal(dict)
+
     def __init__(self, parent=None):
         super(TasksViewerTagFilterCore, self).__init__(parent)
-
-        self.tag_key_definitions = TagsAttributesDefinitions()
-        self.tag_schema = TagsSchema(self.tag_key_definitions)
-        self.taops = TagsOps()
 
         self.create_connections()
         self.update_tags()
@@ -47,13 +48,20 @@ class TasksViewerTagFilterCore(TasksViewerTagFilterBuild):
         self.refresh_btn.clicked.connect(self.update_tags)
 
     def update_tags(self):
+        self.tag_key_definitions = TagsAttributesDefinitions()
+        self.tag_schema = TagsSchema(self.tag_key_definitions)
+        self.taops = TagsOps()
+
         self.clear_layout()
         get_all_tags = self.taops.get_all_documents(ids=True)
         if get_all_tags:
             for tag_id, docs in get_all_tags.items():
                 tag_name = docs[self.tag_key_definitions.name]
-                button = TagFilterButtonWDG(name=tag_name)
-                self.main_layout.addWidget(button)
+                self.button = TagFilterButtonWDG(name=tag_name)
+                self.button.clicked.connect(self.transmit_name)
+                self.button.setCheckable(True)
+                self.main_layout.addWidget(self.button)
+
         self.main_layout.addStretch(1)
         self.main_layout.addWidget(self.refresh_btn)
         self.setLayout(self.main_layout)
@@ -64,6 +72,21 @@ class TasksViewerTagFilterCore(TasksViewerTagFilterBuild):
             widget = item.widget()
             if widget and widget != self.refresh_btn:
                 widget.deleteLater()
+
+    def transmit_name(self):
+        get_active_tags = self.get_active_buttons()
+        # Envars().current_tags = get_active_tags
+        # retrieved_tags_list = list(map(int, get_active_tags.split(',')))
+        # print(Envars().current_tags)
+        self.tag_button_info.emit({"tags": get_active_tags})
+
+    def get_active_buttons(self):
+        active_buttons = []
+        for index in range(self.main_layout.count()):
+            widget = self.main_layout.itemAt(index).widget()
+            if isinstance(widget, QtWidgets.QPushButton) and widget.isChecked():
+                active_buttons.append(widget.text())
+        return active_buttons
 
 
 if __name__ == "__main__":

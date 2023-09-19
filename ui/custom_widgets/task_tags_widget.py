@@ -38,7 +38,7 @@ class TaskTagsWDG(QtWidgets.QWidget):
         main_layout.addLayout(list_button_layout)
 
     def create_connections(self):
-        self.task_tags_cb.currentIndexChanged.connect(self.add_item_to_list_wdg)
+        self.task_tags_cb.activated.connect(self.add_item_to_list_wdg)
         self.clear_btn.clicked.connect(self.clear_tags_list)
 
     def populate_list(self, items: list):
@@ -47,8 +47,6 @@ class TaskTagsWDG(QtWidgets.QWidget):
             if item not in already_used:
                 item = QtWidgets.QListWidgetItem(item)
                 self.task_tags_lw.addItem(item)
-
-
 
     def clear_tags_list(self):
         self.task_tags_lw.clear()
@@ -71,6 +69,10 @@ class TaskTagsWDG(QtWidgets.QWidget):
         all_tags = self.taops.get_all_documents()
         tag_names = [tag[self.tag_key_definitions.name] for tag in all_tags]
         return tag_names
+
+    def refresh_tag_box(self):
+        self.task_tags_cb.clear()
+        self.task_tags_cb.addItems(self.get_db_tags())
 
     def get_assigned_tags(self):
         items = []
