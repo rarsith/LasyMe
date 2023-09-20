@@ -1,10 +1,10 @@
 from PySide2 import QtWidgets
 
-from lasy_me_ui.tasks_properties_editor import TaskPropertiesEditorCore
-from lasy_me_ui.tasks_statistics_viewer import TaskStatisticsBuild
-from lasy_me_ui.tasks_tags_manager import TaskTagManagerCore
+from lasy_ui.tasks_properties_editor import TaskPropertiesEditorCore
+from lasy_ui.tasks_statistics_viewer import TaskStatisticsBuild
+from lasy_ui.tasks_tags_manager import TaskTagManagerCore
 
-html_path = '/\\scratch\\interactive_gantt_chart.html'
+html_path = '/\\lasy_scratch\\interactive_gantt_chart.html'
 
 
 class TaskPropertiesTabsBuild(QtWidgets.QTabWidget):

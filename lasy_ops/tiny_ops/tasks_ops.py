@@ -1,8 +1,8 @@
 
 from tinydb import TinyDB, Query
-from operations.tdb_attributes_definitions import TaskAttributesDefinitions
-from operations.connection import TasksDbPath, TASKS_DATABASE_NAME
-from operations.tdb_manager import TinyDBManager
+from lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
+from lasy_ops.connection import TasksDbPath, TASKS_DATABASE_NAME
+from lasy_ops.tdb_manager import TinyDBManager
 
 
 class TinyOps:

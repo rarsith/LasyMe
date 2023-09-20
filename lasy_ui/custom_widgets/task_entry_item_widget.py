@@ -1,9 +1,9 @@
 from PySide2 import QtWidgets, QtCore
-from common_utils.date_time import DateTime
+from lasy_common_utils.date_time import DateTime
 
-from operations.tdb_priorities import Priorities
-from operations.tdb_statuses import Statuses
-from operations.tiny_ops.tasks_ops import TinyOps
+from lasy_ops.tdb_priorities import Priorities
+from lasy_ops.tdb_statuses import Statuses
+from lasy_ops.tiny_ops.tasks_ops import TinyOps
 
 
 class TaskProgressBarWDG(QtWidgets.QWidget):

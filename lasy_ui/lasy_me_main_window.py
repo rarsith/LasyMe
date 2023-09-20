@@ -1,6 +1,6 @@
 from PySide2 import QtWidgets
 
-from lasy_me_ui.to_do_ui import ToDoMeMainCore
+from lasy_ui.to_do_ui import ToDoMeMainCore
 
 
 class LasyMeMainWindow(QtWidgets.QMainWindow):

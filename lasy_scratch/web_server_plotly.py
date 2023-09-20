@@ -22,7 +22,7 @@ class GanttChartApp(QMainWindow):
         webview = QWebEngineView(self)
 
         # Load the HTML chart file using the full file path
-        webview.setUrl(QUrl.fromLocalFile('C:\\Users\\arsithra\\PycharmProjects\\LasyMe\\scratch\\interactive_gantt_chart.html'))  # Replace with the actual file path
+        webview.setUrl(QUrl.fromLocalFile('C:\\Users\\arsithra\\PycharmProjects\\LasyMe\\lasy_scratch\\interactive_gantt_chart.html'))  # Replace with the actual file path
 
         layout.addWidget(webview)
 

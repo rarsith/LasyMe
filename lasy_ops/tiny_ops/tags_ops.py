@@ -1,6 +1,6 @@
 from tinydb import TinyDB, Query
-from operations.tdb_manager import TinyDBManager
-from operations.connection import TagsDbPath, TAGS_DATABASE_NAME
+from lasy_ops.tdb_manager import TinyDBManager
+from lasy_ops.connection import TagsDbPath, TAGS_DATABASE_NAME
 
 
 class TagsOps:

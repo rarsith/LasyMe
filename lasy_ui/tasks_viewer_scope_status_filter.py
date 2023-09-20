@@ -1,7 +1,7 @@
 from PySide2 import QtWidgets, QtCore
 
-from operations.tdb_priorities import Priorities
-from operations.tdb_statuses import Statuses
+from lasy_ops.tdb_priorities import Priorities
+from lasy_ops.tdb_statuses import Statuses
 
 
 class PrioStatusFilterButtonWDG(QtWidgets.QPushButton):

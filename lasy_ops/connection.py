@@ -3,7 +3,7 @@ import getpass
 from tinydb import TinyDB
 
 _CURRENT_USER = getpass.getuser()
-_DB_ROOT_PATH = "C:\\Users\\arsithra\\PycharmProjects\\LasyMe\\databases"
+_DB_ROOT_PATH = "/lasy_databases"
 
 TASKS_DATABASE_NAME = f'{_CURRENT_USER}_TODO_tasks_db.json'
 USERS_DATABASE_NAME = f'{_CURRENT_USER}_TODO_users_db.json'

@@ -1,6 +1,6 @@
 import getpass
-from common_utils.date_time import DateTime
-from operations.tdb_attributes_definitions import UsersAttributesDefinitions
+from lasy_common_utils.date_time import DateTime
+from lasy_ops.tdb_attributes_definitions import UsersAttributesDefinitions
 
 
 class UsersSchema:

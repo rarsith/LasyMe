@@ -1,10 +1,10 @@
 from PySide2 import QtWidgets, QtCore
-from operations.tdb_priorities import Priorities
-from operations.schemas.task_schema import TaskSchema
-from operations.tdb_attributes_definitions import TaskAttributesDefinitions
-from operations.tiny_ops.tasks_ops import TinyOps
-from lasy_me_ui.custom_widgets.task_text_widget import CustomPlainTextEditWDG
-from common_utils.date_time import DateTime
+from lasy_ops.tdb_priorities import Priorities
+from lasy_ops.schemas.task_schema import TaskSchema
+from lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
+from lasy_ops.tiny_ops.tasks_ops import TinyOps
+from lasy_ui.custom_widgets.task_text_widget import CustomPlainTextEditWDG
+from lasy_common_utils.date_time import DateTime
 import getpass
 
 

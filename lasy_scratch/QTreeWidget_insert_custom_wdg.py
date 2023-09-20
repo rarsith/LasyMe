@@ -1,6 +1,6 @@
 import sys
 from PySide2 import QtWidgets
-from scratch.QtreeWidget_custom_task_Item_oneRow import TaskEntityWDG
+from lasy_scratch.QtreeWidget_custom_task_Item_oneRow import TaskEntityWDG
 
 
 class TaskDetailsWDG(QtWidgets.QWidget):
