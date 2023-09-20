@@ -84,7 +84,10 @@ class TinyOps:
             for condition in conditions[1:]:
                 combined_condition = combined_condition & condition
 
-            result = self.table.search(combined_condition)
+            db = TinyDB(TasksDbPath)
+            db_table = db.table(TASKS_DATABASE_NAME)
+            result = db_table.search(combined_condition)
+            # result = self.table.search(combined_condition)
 
             for document in result:
                 full_docs[document.doc_id] = document

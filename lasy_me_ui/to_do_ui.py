@@ -1,12 +1,12 @@
 import sys
 from PySide2 import QtWidgets
 
-from ui.tasks_viewer import ExistingTasksViewerCore
-from ui.tasks_properties_tabs import TaskPropertiesTabsBuild
-from ui.tasks_user_input import InputTaskBuildCore
-from ui.tasks_user_input_preview import TaskPreviewPropertiesCore
-from ui.tasks_viewer_tag_filter import TasksViewerTagFilterCore
-from ui.tasks_viewer_scope_status_filter import PrioStatusFilterButtonCore
+from lasy_me_ui.tasks_viewer import ExistingTasksViewerCore
+from lasy_me_ui.tasks_properties_tabs import TaskPropertiesTabsBuild
+from lasy_me_ui.tasks_user_input import InputTaskBuildCore
+from lasy_me_ui.tasks_user_input_preview import TaskPreviewPropertiesCore
+from lasy_me_ui.tasks_viewer_tag_filter import TasksViewerTagFilterCore
+from lasy_me_ui.tasks_viewer_scope_status_filter import PrioStatusFilterButtonCore
 
 
 class ToDoMeMainCore(QtWidgets.QWidget):
@@ -125,24 +125,14 @@ class ToDoMeMainCore(QtWidgets.QWidget):
         self.task_preview_properties_wdg.update_duration_wdg(duration_in)
 
 
-class LasyMeMainWindow(QtWidgets.QMainWindow):
-    WINDOW_TITLE = "Lasy Me"
 
-    def __init__(self, parent=None):
-        super(LasyMeMainWindow, self).__init__(parent)
-
-        self.setGeometry(500, 500, 1200, 700)
-        self.setWindowTitle(self.WINDOW_TITLE)
-
-        central_widget = ToDoMeMainCore()
-        self.setCentralWidget(central_widget)
 
 
 if __name__ == "__main__":
     qss_style_file = "stylesheets/dark_orange/dark_orange_style.qss"
 
     app = QtWidgets.QApplication(sys.argv)
-    test_dialog = LasyMeMainWindow()
+    test_dialog = ToDoMeMainCore()
     test_dialog.show()
 
     with open(qss_style_file, "r") as f:
