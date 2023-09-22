@@ -1,14 +1,16 @@
 import sys
 from PySide2 import QtWidgets
-from LasyMeApp.lasy_ui import LasyMeMainWindow
+from LasyMeApp.lasy_common_utils import config_file_utils
+from LasyMeApp.lasy_ui.lasy_me_main_window import LasyMeMainWindow
+from LasyMeApp.lasy_ui.lasy_me_configuration_manager import LasyMeConfigurationManager
 
+
+qss_style_file = "lasy_ui/stylesheets/dark_orange/dark_orange_style.qss"
 
 def main():
-
-    qss_style_file = "lasy_ui/stylesheets/dark_orange/dark_orange_style.qss"
-
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = LasyMeMainWindow()
+
     test_dialog.show()
 
     with open(qss_style_file, "r") as f:

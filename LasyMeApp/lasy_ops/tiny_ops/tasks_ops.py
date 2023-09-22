@@ -86,12 +86,11 @@ class TinyOps:
             db = TinyDB(TasksDbPath)
             db_table = db.table(TASKS_DATABASE_NAME)
             result = db_table.search(combined_condition)
-            # result = self.table.search(combined_condition)
+
 
             for document in result:
                 full_docs[document.doc_id] = document
 
-        print (__name__, "Ran And Returns: ", full_docs.keys(),"\n", "With Conditions: ", conditions)
         return full_docs
 
 

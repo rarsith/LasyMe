@@ -1,12 +1,14 @@
 import sys
 from PySide2 import QtWidgets
 
+
 from LasyMeApp.lasy_ui.tasks_viewer import ExistingTasksViewerCore
 from LasyMeApp.lasy_ui.tasks_properties_tabs import TaskPropertiesTabsBuild
 from LasyMeApp.lasy_ui.tasks_user_input import InputTaskBuildCore
 from LasyMeApp.lasy_ui.tasks_user_input_preview import TaskPreviewPropertiesCore
 from LasyMeApp.lasy_ui.tasks_viewer_tag_filter import TasksViewerTagFilterCore
 from LasyMeApp.lasy_ui.tasks_viewer_scope_status_filter import PrioStatusFilterButtonCore
+from LasyMeApp.lasy_ui.lasy_me_configuration_manager import LasyMeConfigurationManager
 
 
 class ToDoMeMainCore(QtWidgets.QWidget):
@@ -17,7 +19,9 @@ class ToDoMeMainCore(QtWidgets.QWidget):
         self.create_layout()
         self.create_connections()
 
+
     def create_widgets(self):
+
         self.tasks_tags_filter_viewer_wdg = TasksViewerTagFilterCore()
         self.tasks_viewer_wdg = ExistingTasksViewerCore()
         self.tasks_prio_status_filter_wdg = PrioStatusFilterButtonCore()
@@ -82,7 +86,6 @@ class ToDoMeMainCore(QtWidgets.QWidget):
 
         self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked. \
             connect(self.tasks_tags_filter_viewer_wdg.update_tags)
-
 
     def set_preview_title(self):
         title_in = self.task_input_wdg.get_title()

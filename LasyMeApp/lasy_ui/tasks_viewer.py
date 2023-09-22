@@ -68,11 +68,25 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
     def create_connections(self):
         self.task_viewer_trw.itemPressed.connect(self.retrieve_task_doc)
         self.task_viewer_trw.itemPressed.connect(self.get_view_entries)
+        # self.task_viewer_trw.itemSelectionChanged.connect(self.change_row_colors)
         self.refresh_btn.clicked.connect(self.refresh_all)
         self.by_end_date_btn.clicked.connect(self.sort_by_end_date)
         self.by_created_btn.clicked.connect(self.sort_by_creation_date)
         self.by_prio_btn.clicked.connect(self.sort_by_prio)
         self.by_status_btn.clicked.connect(self.sort_by_status)
+
+    def change_row_colors(self):
+        selected_items = self.task_viewer_trw.selectedItems()
+
+        if selected_items:
+            row = selected_items[0]
+
+            progress_bar = self.task_viewer_trw.itemWidget(row, 0)
+            text_title = self.task_viewer_trw.itemWidget(row, 1)
+
+            print(progress_bar.setStyleSheet("background-color: lightgrey; color: black;"))
+            print(text_title.setStyleSheet("background-color: lightgrey; color: black;"))
+
 
     def populate_tasks_custom(self, key_to_sort, descending=False):
         get_current_content_ids = self.get_view_entries()
@@ -212,6 +226,7 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         child_item = QtWidgets.QTreeWidgetItem(parent_item)
 
         custom_widget_container = TaskEntityWDG(task_id=task_id)
+        title_text = custom_widget_container.get_task_title()
         custom_widget_container.get_progress_bar_amount()
         custom_widget_container.get_task_title()
         custom_widget_container.get_task_status()

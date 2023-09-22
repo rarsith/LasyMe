@@ -13,6 +13,19 @@ QWidget
     background-color: #323232;
 }
 
+QTreeWidget::item
+{
+    padding: 2px;
+}
+
+QTreeWidget::item:selected
+{
+    background-color: blue;
+    color: white;
+    font-weight: bold;
+}
+
+
 QTreeView, QListView
 {
     background-color: silver;

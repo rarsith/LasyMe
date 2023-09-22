@@ -6,6 +6,7 @@ from LasyMeApp.lasy_ops.tdb_statuses import Statuses
 from LasyMeApp.lasy_ops.tiny_ops.tasks_ops import TinyOps
 
 
+
 class TaskProgressBarWDG(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(TaskProgressBarWDG, self).__init__(parent)
@@ -15,8 +16,8 @@ class TaskProgressBarWDG(QtWidgets.QWidget):
 
     def create_widgets(self):
         self.progress_bar = QtWidgets.QProgressBar()
-        self.progress_bar.setMaximumHeight(20)
-        self.progress_bar.setMaximumWidth(150)
+        self.progress_bar.setMaximumHeight(40)
+        self.progress_bar.setMaximumWidth(120)
         self.progress_bar.setTextVisible(False)
 
         self.remaining_days_lb = QtWidgets.QLabel()
@@ -44,6 +45,7 @@ class TaskEntityWDG(QtWidgets.QWidget):
         self.task_title_lb = QtWidgets.QLabel("-----------")
         self.task_title_lb.setMinimumHeight(20)
         self.task_title_lb.setMaximumHeight(20)
+        self.task_title_lb.setStyleSheet("background-color: transparent; color: black;")
 
         self.status_cb = QtWidgets.QComboBox()
         self.status_cb.addItems(Statuses().all_statuses)

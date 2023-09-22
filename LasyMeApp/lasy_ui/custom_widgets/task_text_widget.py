@@ -5,7 +5,6 @@ class CustomPlainTextEditWDG(QtWidgets.QPlainTextEdit):
     def __init__(self, parent=None):
         super(CustomPlainTextEditWDG, self).__init__(parent)
 
-        self.setMaximumWidth(450)
         self.create_connections()
 
     def create_connections(self):

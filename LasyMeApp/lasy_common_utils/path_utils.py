@@ -1,8 +1,10 @@
 from pathlib import Path
 
 
-def to_user_home_dir():
-    return Path.home()
+def to_user_home_dir(parent_directory=None):
+    if not parent_directory:
+        return Path.home()
+    return Path.home() / parent_directory
 
 
 def create_file_in_home_dir(file_name):
@@ -17,5 +19,7 @@ def convert_path_to_universal(path_to_convert):
 
 
 if __name__ == "__main__":
+    home_usr = to_user_home_dir("lasy_me_databases")
+    print(home_usr)
     path_to_conv = r'C:\Users\Username\Documents\file.txt'
     convert_path_to_universal(path_to_conv)

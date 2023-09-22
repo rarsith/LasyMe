@@ -20,6 +20,7 @@ class InputTaskBuild(QtWidgets.QWidget):
 
     def create_widgets(self):
         self.task_input_ptx = CustomPlainTextEditWDG()
+        self.task_input_ptx.setMaximumWidth(450)
         self.task_input_ptx.setPlaceholderText("Start Typing...First Line is considered the Task Title")
 
         self.end_date = QtWidgets.QDateEdit(calendarPopup=True)

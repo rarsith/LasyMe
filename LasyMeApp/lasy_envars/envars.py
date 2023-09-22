@@ -8,7 +8,7 @@ class Envars():
 
     @os_root.setter
     def os_root(self, value):
-        os.environ.get['LASY_ROOT'] = value
+        os.environ['LASY_ROOT'] = value
 
     @property
     def lasy_id(self):

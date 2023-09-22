@@ -1,7 +1,12 @@
+import os
 import sys
+from  pathlib import Path
 from LasyMeApp.lasy_common_utils import files_utils as filops
+from LasyMeApp.lasy_common_utils import path_utils as patils
 from PySide2 import QtWidgets, QtCore
 from LasyMeApp.lasy_ops.schemas.config_schema import ConfigSchemaAttrNames, ConfigSchema
+from LasyMeApp.lasy_common_utils import config_file_utils
+from LasyMeApp.lasy_ops.connection import ConfigPath
 
 
 class LasyFileDialog(QtWidgets.QWidget):
@@ -25,10 +30,13 @@ class LasyFileDialog(QtWidgets.QWidget):
         pass
 
 
-class LasyMeConfigurationManager(QtWidgets.QWidget):
+class LasyMeConfigurationManager(QtWidgets.QDialog):
+    closed = QtCore.Signal()
     def __init__(self, parent=None):
         super(LasyMeConfigurationManager, self).__init__(parent)
 
+        self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowCloseButtonHint & ~QtCore.Qt.WindowContextHelpButtonHint)
+        self.setWindowTitle("Lasy Configuration")
         self.create_widgets()
         self.create_layout()
         self.create_connections()
@@ -71,25 +79,29 @@ class LasyMeConfigurationManager(QtWidgets.QWidget):
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
 
     def create_layout(self):
-        spacer = QtWidgets.QSpacerItem(10, 30)
+        separator01 = self.create_separator()
+        separator02 = self.create_separator()
+        separator03 = self.create_separator()
+        separator04 = self.create_separator()
 
         path_input_layout = QtWidgets.QHBoxLayout()
         path_input_layout.addWidget(self.db_root_path_le)
         path_input_layout.addWidget(self.open_browser_btn)
 
         wdg_layout = QtWidgets.QFormLayout()
-        wdg_layout.setAlignment(QtCore.Qt.AlignRight)
+        wdg_layout.setAlignment(QtCore.Qt.AlignLeft)
         wdg_layout.addRow("DB_ROOT_PATH ", path_input_layout)
-        wdg_layout.addItem(spacer)
+        wdg_layout.addWidget(separator01)
         wdg_layout.addRow("WORK STARTS AT ", self.work_starts_at_le)
         wdg_layout.addRow("WORK ENDS AT ", self.work_ends_at_le)
-        wdg_layout.addItem(spacer)
+        wdg_layout.addWidget(separator02)
         wdg_layout.addRow("DB UPDATE INTERVAL ", self.main_viewer_update_interval_le)
         wdg_layout.addRow("DB BACKUP INTERVAL ", self.database_backup_interval_le)
         wdg_layout.addRow("TIME PER DAY ALLOCATED ", self.time_per_day_allocation_le)
-        wdg_layout.addItem(spacer)
+        wdg_layout.addWidget(separator03)
         wdg_layout.addRow("AUTO STATUS MANAGEMENT ", self.auto_status_management_chckb)
         wdg_layout.addRow("AUTO PRIORITIES MANAGEMENT ", self.auto_prio_management_chckb)
+        wdg_layout.addWidget(separator04)
 
         buttons_layout = QtWidgets.QHBoxLayout()
         buttons_layout.addWidget(self.save_btn)
@@ -97,19 +109,34 @@ class LasyMeConfigurationManager(QtWidgets.QWidget):
 
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.addLayout(wdg_layout)
-        main_layout.addItem(spacer)
         main_layout.addLayout(buttons_layout)
+
+    def create_separator(self):
+        separator = QtWidgets.QFrame()
+        separator.setFrameShape(QtWidgets.QFrame.HLine)
+        separator.setFrameShadow(QtWidgets.QFrame.Sunken)
+        return separator
 
     def create_connections(self):
         self.open_browser_btn.clicked.connect(self.open_file_dialog)
-        self.save_btn.clicked.connect(self.write_cofig_file)
+        self.save_btn.clicked.connect(self.write_config_file)
+        self.save_btn.clicked.connect(self.close)
+        self.save_btn.clicked.connect(self.deleteLater)
         self.cancel_btn.clicked.connect(self.close)
         self.cancel_btn.clicked.connect(self.deleteLater)
+        self.cancel_btn.clicked.connect(self.close_event)
+        self.save_btn.clicked.connect(self.close_event)
+
+    def close_event(self, event):
+        print("Signal Emitted")
+        self.closed.emit()
+        # super().closeEvent(event)
 
     def gather_options(self):
         schema_attr_names = ConfigSchemaAttrNames()
         schema = ConfigSchema(schema_attr_names)
 
+        # default_databses_folder = patils.to_user_home_dir(parent_directory="lasy_databses")
         schema.root_path = self.db_root_path_le.text()
         schema.start_day = self.work_starts_at_le.text()
         schema.end_day = self.work_ends_at_le.text()
@@ -128,10 +155,11 @@ class LasyMeConfigurationManager(QtWidgets.QWidget):
         return get_all_options
 
     def write_config_file(self):
+        base_path = Path(ConfigPath)
         config_file = self.gather_options()
         config_file_name = "lasy_config_data"
         path_to_write_to = "../lasy_config"
-        filops.write_json(path_to_write_to, config_file_name, config_file)
+        filops.write_json(base_path, config_file_name, config_file)
 
     def open_file_dialog(self):
         response = QtWidgets.QFileDialog.getExistingDirectory(self, caption='Select a folder')
@@ -140,11 +168,8 @@ class LasyMeConfigurationManager(QtWidgets.QWidget):
             self.db_root_path_le.setText(response)
 
     def custom_config_exists(self):
-        import os
-        relative_path = "../lasy_config/lasy_config_data.json"
-        absolute_path = os.path.abspath(relative_path)
-
-        return os.path.exists(absolute_path)
+        custom_config_exists = config_file_utils.custom_config_exists()
+        return custom_config_exists
 
     def populate_config(self):
         is_custom = self.custom_config_exists()
@@ -157,19 +182,28 @@ class LasyMeConfigurationManager(QtWidgets.QWidget):
             self.load_config(config_file=custom_config)
 
     def get_defaults(self):
-        default_config_file_path = "../lasy_config/config_defaults/lasy_default_config_data.json"
-        get_config_data = filops.open_json(default_config_file_path)
+        base_path = Path(ConfigPath)
+        default_config_file_path = "config_defaults"
+        default_config_file_name = "lasy_default_config_data.json"
+        full_path = base_path.joinpath(default_config_file_path, default_config_file_name)
+        get_config_data = filops.open_json(full_path)
         return get_config_data
 
     def get_custom(self):
-        custom_config_file_path = "../lasy_config/lasy_config_data.json"
-        get_config_data = filops.open_json(custom_config_file_path)
+        base_path = Path(ConfigPath)
+        custom_config_file_path = "lasy_config_data.json"
+        full_path = base_path.joinpath(custom_config_file_path)
+        get_config_data = filops.open_json(full_path)
         return get_config_data
 
     def load_config(self, config_file):
         schema_attr_names = ConfigSchemaAttrNames()
+        if len(config_file[schema_attr_names._db_root_path]) != 0:
+            self.db_root_path_le.setText(config_file[schema_attr_names._db_root_path])
+        else:
+            default_databses_folder = patils.to_user_home_dir(parent_directory="lasy_databses")
+            self.db_root_path_le.setText(str(default_databses_folder))
 
-        self.db_root_path_le.setText(config_file[schema_attr_names._db_root_path])
         self.work_starts_at_le.setText(config_file[schema_attr_names._start_work_day])
         self.work_ends_at_le.setText(config_file[schema_attr_names._end_work_day])
         self.main_viewer_update_interval_le.setText(config_file[schema_attr_names._update_interval])

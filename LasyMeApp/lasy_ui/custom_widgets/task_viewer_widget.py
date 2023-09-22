@@ -1,6 +1,12 @@
 from PySide2 import QtWidgets, QtCore
 
 
+class CustomDelegate(QtWidgets.QStyledItemDelegate):
+    def sizeHint(self, option, index):
+        # Set a custom row height (in pixels)
+        return option.fontMetrics.height() + 30
+
+
 class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
     def __init__(self, parent=None):
         super(ExitingTasksViewerWDG, self).__init__(parent)
@@ -15,7 +21,10 @@ class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
         self.setDragDropMode(QtWidgets.QTreeWidget.InternalMove)
         self.setDefaultDropAction(QtCore.Qt.MoveAction)
         self.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)  # Disable selection highlighting
-        # self.setSelectionMode(QtWidgets.QTreeWidget.SingleSelection)
+        self.setSelectionMode(QtWidgets.QTreeWidget.SingleSelection)
+
+        # self.setItemDelegateForColumn(0, CustomDelegate())
+        # self.setItemDelegateForColumn(1, CustomDelegate())
         self.setFocusPolicy(QtCore.Qt.NoFocus)
 
         # self.setRootIsDecorated(False)
@@ -35,9 +44,12 @@ class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
 
         self.setColumnWidth(0, round(self.widget_width*0.30))
         self.setColumnWidth(1, round(self.widget_width*0.60))
-        self.setColumnWidth(2, round(self.widget_width*0.10))
-        self.setColumnWidth(3, round(self.widget_width*0.10))
+        self.setColumnWidth(2, round(self.widget_width*0.13))
+        self.setColumnWidth(3, round(self.widget_width*0.13))
         self.setColumnWidth(4, round(self.widget_width*0.05))
         self.setColumnWidth(5, round(self.widget_width*0.005))
 
         self.setColumnHidden(5, True)
+
+    def size_hint_for_row(self, row):
+        return 40
