@@ -1,6 +1,6 @@
-from LasyMeApp.lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
-from LasyMeApp.lasy_ops.tdb_priorities import Priorities
-from LasyMeApp.lasy_ops.tdb_statuses import Statuses
+from lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
+from lasy_ops.tdb_priorities import Priorities
+from lasy_ops.tdb_statuses import Statuses
 
 
 class TaskSchema:

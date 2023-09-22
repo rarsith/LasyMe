@@ -1,5 +1,5 @@
 from tinydb import TinyDB
-from LasyMeApp.lasy_ops.connection import TagsDbPath, TAGS_DATABASE_NAME
+from lasy_ops.connection import TagsDbPath, TAGS_DATABASE_NAME
 
 
 class TagsOps:

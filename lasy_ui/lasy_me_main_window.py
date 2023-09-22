@@ -1,7 +1,7 @@
 from PySide2 import QtWidgets
-from LasyMeApp.lasy_ui.to_do_ui import ToDoMeMainCore
-from LasyMeApp.lasy_common_utils import config_file_utils
-from LasyMeApp.lasy_ui.lasy_me_configuration_manager import LasyMeConfigurationManager
+from lasy_ui.to_do_ui import ToDoMeMainCore
+from lasy_common_utils import config_file_utils
+from lasy_ui.lasy_me_configuration_manager import LasyMeConfigurationManager
 
 
 class LasyMeMainWindow(QtWidgets.QMainWindow):

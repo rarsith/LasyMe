@@ -1,7 +1,7 @@
 
 from tinydb import TinyDB, Query
-from LasyMeApp.lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
-from LasyMeApp.lasy_ops.connection import TasksDbPath, TASKS_DATABASE_NAME
+from lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
+from lasy_ops.connection import TasksDbPath, TASKS_DATABASE_NAME
 
 
 class TinyOps:

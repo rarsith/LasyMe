@@ -1,9 +1,9 @@
 from PySide2 import QtWidgets, QtCore
-from LasyMeApp.lasy_common_utils.date_time_utils import DateTime
+from lasy_common_utils.date_time_utils import DateTime
 
-from LasyMeApp.lasy_ops.tdb_priorities import Priorities
-from LasyMeApp.lasy_ops.tdb_statuses import Statuses
-from LasyMeApp.lasy_ops.tiny_ops.tasks_ops import TinyOps
+from lasy_ops.tdb_priorities import Priorities
+from lasy_ops.tdb_statuses import Statuses
+from lasy_ops.tiny_ops.tasks_ops import TinyOps
 
 
 

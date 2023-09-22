@@ -1,12 +1,12 @@
 from PySide2 import QtWidgets, QtCore
 from PySide2.QtCore import Slot
-from LasyMeApp.lasy_ops.tiny_ops.tasks_ops import TinyOps
-from LasyMeApp.lasy_ui.custom_widgets.task_entry_item_widget import TaskEntityWDG
-from LasyMeApp.lasy_ops.tdb_attributes_paths import TasksAttributesPaths
-from LasyMeApp.lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
-from LasyMeApp.lasy_ui.custom_widgets.task_viewer_widget import ExitingTasksViewerWDG
-from LasyMeApp.lasy_ops.tdb_priorities import Priorities
-from LasyMeApp.lasy_ops.tdb_statuses import Statuses
+from lasy_ops.tiny_ops.tasks_ops import TinyOps
+from lasy_ui.custom_widgets.task_entry_item_widget import TaskEntityWDG
+from lasy_ops.tdb_attributes_paths import TasksAttributesPaths
+from lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
+from lasy_ui.custom_widgets.task_viewer_widget import ExitingTasksViewerWDG
+from lasy_ops.tdb_priorities import Priorities
+from lasy_ops.tdb_statuses import Statuses
 
 
 class ExitingTasksViewerBuild(QtWidgets.QWidget):

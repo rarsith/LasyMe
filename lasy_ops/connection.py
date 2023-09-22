@@ -1,10 +1,10 @@
 import os
 import getpass
 from pathlib import Path
-from LasyMeApp.lasy_common_utils import path_utils as patils
-from LasyMeApp.lasy_envars.envars import Envars
+from lasy_common_utils import path_utils as patils
+from lasy_envars.envars import Envars
 
-root_path = r"C:\Users\arsithra\PycharmProjects\LasyMe\LasyMeApp"
+root_path = r"C:\Users\arsithra\PycharmProjects\LasyMe"
 universal_path = patils.convert_path_to_universal(root_path)
 
 # Set Root Path for the App

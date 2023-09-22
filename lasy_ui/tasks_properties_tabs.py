@@ -1,8 +1,8 @@
 from PySide2 import QtWidgets
 
-from LasyMeApp.lasy_ui.tasks_properties_editor import TaskPropertiesEditorCore
-from LasyMeApp.lasy_ui.tasks_statistics_viewer import TaskStatisticsBuild
-from LasyMeApp.lasy_ui.tasks_tags_manager import TaskTagManagerCore
+from lasy_ui.tasks_properties_editor import TaskPropertiesEditorCore
+from lasy_ui.tasks_statistics_viewer import TaskStatisticsBuild
+from lasy_ui.tasks_tags_manager import TaskTagManagerCore
 
 html_path = '/\\lasy_scratch\\interactive_gantt_chart.html'
 

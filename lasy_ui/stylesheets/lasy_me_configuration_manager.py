@@ -1,7 +1,7 @@
 import sys
-from LasyMeApp.lasy_common_utils import files_utils as filops
+from lasy_common_utils import files_utils as filops
 from PySide2 import QtWidgets, QtCore
-from LasyMeApp.lasy_ops.schemas.config_schema import ConfigSchemaAttrNames, ConfigSchema
+from lasy_ops.schemas.config_schema import ConfigSchemaAttrNames, ConfigSchema
 
 
 class LasyFileDialog(QtWidgets.QWidget):

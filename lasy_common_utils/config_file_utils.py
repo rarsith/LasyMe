@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-from LasyMeApp.lasy_ops.connection import ConfigPath
-from LasyMeApp.lasy_common_utils import path_utils as patils
+from lasy_ops.connection import ConfigPath
+
 
 def custom_config_exists():
     base_path = Path(ConfigPath)

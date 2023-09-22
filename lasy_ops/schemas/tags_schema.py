@@ -1,6 +1,6 @@
 import getpass
-from LasyMeApp.lasy_common_utils.date_time_utils import DateTime
-from LasyMeApp.lasy_ops.tdb_attributes_definitions import TagsAttributesDefinitions
+from lasy_common_utils.date_time_utils import DateTime
+from lasy_ops.tdb_attributes_definitions import TagsAttributesDefinitions
 
 
 class TagsSchema:

@@ -1,10 +1,10 @@
 from PySide2 import QtWidgets, QtCore
 from PySide2.QtCore import Slot
-from LasyMeApp.lasy_ui.custom_widgets.task_text_widget import CustomPlainTextEditWDG
-from LasyMeApp.lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
-from LasyMeApp.lasy_ops.tdb_attributes_paths import TasksAttributesPaths
-from LasyMeApp.lasy_ops.tiny_ops.tasks_ops import TinyOps
-from LasyMeApp.lasy_ui.custom_widgets.task_tags_widget import TaskTagsWDG
+from lasy_ui.custom_widgets.task_text_widget import CustomPlainTextEditWDG
+from lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
+from lasy_ops.tdb_attributes_paths import TasksAttributesPaths
+from lasy_ops.tiny_ops.tasks_ops import TinyOps
+from lasy_ui.custom_widgets.task_tags_widget import TaskTagsWDG
 
 
 class TaskPropertiesEditorBuild(QtWidgets.QWidget):

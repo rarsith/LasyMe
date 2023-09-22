@@ -2,13 +2,12 @@ import sys
 from PySide2 import QtWidgets
 
 
-from LasyMeApp.lasy_ui.tasks_viewer import ExistingTasksViewerCore
-from LasyMeApp.lasy_ui.tasks_properties_tabs import TaskPropertiesTabsBuild
-from LasyMeApp.lasy_ui.tasks_user_input import InputTaskBuildCore
-from LasyMeApp.lasy_ui.tasks_user_input_preview import TaskPreviewPropertiesCore
-from LasyMeApp.lasy_ui.tasks_viewer_tag_filter import TasksViewerTagFilterCore
-from LasyMeApp.lasy_ui.tasks_viewer_scope_status_filter import PrioStatusFilterButtonCore
-from LasyMeApp.lasy_ui.lasy_me_configuration_manager import LasyMeConfigurationManager
+from lasy_ui.tasks_viewer import ExistingTasksViewerCore
+from lasy_ui.tasks_properties_tabs import TaskPropertiesTabsBuild
+from lasy_ui.tasks_user_input import InputTaskBuildCore
+from lasy_ui.tasks_user_input_preview import TaskPreviewPropertiesCore
+from lasy_ui.tasks_viewer_tag_filter import TasksViewerTagFilterCore
+from lasy_ui.tasks_viewer_scope_status_filter import PrioStatusFilterButtonCore
 
 
 class ToDoMeMainCore(QtWidgets.QWidget):

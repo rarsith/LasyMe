@@ -1,4 +1,4 @@
-from LasyMeApp.lasy_ops.tdb_attributes_definitions import UsersAttributesDefinitions
+from lasy_ops.tdb_attributes_definitions import UsersAttributesDefinitions
 
 
 class UsersSchema:

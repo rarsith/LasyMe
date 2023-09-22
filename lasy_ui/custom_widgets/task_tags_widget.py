@@ -1,9 +1,9 @@
 from PySide2 import QtWidgets
 
-from LasyMeApp.lasy_ops.tdb_attributes_definitions import TagsAttributesDefinitions
-from LasyMeApp.lasy_ops.tdb_attributes_paths import TagsAttributesPaths
-from LasyMeApp.lasy_ops.tiny_ops.tags_ops import TagsOps
-from LasyMeApp.lasy_ops.tiny_ops.tasks_ops import TinyOps
+from lasy_ops.tdb_attributes_definitions import TagsAttributesDefinitions
+from lasy_ops.tdb_attributes_paths import TagsAttributesPaths
+from lasy_ops.tiny_ops.tags_ops import TagsOps
+from lasy_ops.tiny_ops.tasks_ops import TinyOps
 
 class TaskTagsWDG(QtWidgets.QWidget):
 
