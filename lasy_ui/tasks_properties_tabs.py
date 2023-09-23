@@ -22,6 +22,8 @@ class TaskPropertiesTabsBuild(QtWidgets.QTabWidget):
         # self.addTab(self.task_statistics_wdg, "Statistics")
         self.setTabPosition(QtWidgets.QTabWidget.North)
 
+        self.setMaximumWidth(400)
+
 
 if __name__ == "__main__":
     import sys

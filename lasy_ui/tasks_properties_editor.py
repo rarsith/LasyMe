@@ -5,6 +5,7 @@ from lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
 from lasy_ops.tdb_attributes_paths import TasksAttributesPaths
 from lasy_ops.tiny_ops.tasks_ops import TinyOps
 from lasy_ui.custom_widgets.task_tags_widget import TaskTagsWDG
+from lasy_ui.custom_widgets.custom_fonts_widget import define_font
 
 
 class TaskPropertiesEditorBuild(QtWidgets.QWidget):
@@ -15,11 +16,13 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
         self.create_layout()
 
     def create_widgets(self):
+        ubuntu_font = define_font()
         self.record_current_sel_task = QtWidgets.QLineEdit()
         self.record_current_sel_task.setDisabled(True)
 
         self.text_viewer_ptx = CustomPlainTextEditWDG()
         self.text_viewer_ptx.setMinimumHeight(270)
+        self.text_viewer_ptx.setFont(ubuntu_font)
 
         self.update_task_text_btn = QtWidgets.QPushButton("Update Task Briefing")
         self.update_task_text_btn.setMinimumHeight(40)
@@ -83,7 +86,7 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
 
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.addLayout(win_layout)
-        # main_layout.addStretch(1)
+        main_layout.addStretch(1)
         main_layout.addLayout(dates_layout)
         main_layout.addLayout(misc_layout)
         main_layout.addWidget(self.set_tags_wdg)

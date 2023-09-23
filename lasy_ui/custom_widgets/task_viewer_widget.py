@@ -3,9 +3,14 @@ from PySide2 import QtWidgets, QtCore
 
 class CustomDelegate(QtWidgets.QStyledItemDelegate):
     def sizeHint(self, option, index):
-        # Set a custom row height (in pixels)
-        return option.fontMetrics.height() + 30
+        # Customize the height of each item in the QTreeWidget
+        size_hint = super().sizeHint(option, index)
+        size_hint.setHeight(35)  # Set your desired height here
+        return size_hint
 
+    def initStyleOption(self, option, index):
+        super().initStyleOption(option, index)
+        option.displayAlignment = QtCore.Qt.AlignmentFlag.AlignVCenter
 
 class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
     def __init__(self, parent=None):
@@ -15,6 +20,8 @@ class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
         self.create_widgets()
 
     def create_widgets(self):
+        column_index = 1
+        item_delegate = CustomDelegate()
 
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
@@ -23,11 +30,7 @@ class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
         self.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)  # Disable selection highlighting
         self.setSelectionMode(QtWidgets.QTreeWidget.SingleSelection)
 
-        # self.setItemDelegateForColumn(0, CustomDelegate())
-        # self.setItemDelegateForColumn(1, CustomDelegate())
         self.setFocusPolicy(QtCore.Qt.NoFocus)
-
-        # self.setRootIsDecorated(False)
 
         self.setDisabled(False)
         self.setMinimumWidth(self.widget_width)
@@ -37,6 +40,9 @@ class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
         self.setColumnCount(len(self.widget_columns_names))
         self.setHeaderLabels(self.widget_columns_names)
         self.setHeaderHidden(True)
+        self.setItemDelegate(item_delegate)
+
+        self.setItemDelegateForColumn(column_index, CustomDelegate(self))
 
         header = self.header()
         header.setStretchLastSection(False)

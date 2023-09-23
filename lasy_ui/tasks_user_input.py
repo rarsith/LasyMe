@@ -5,6 +5,7 @@ from lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
 from lasy_ops.tiny_ops.tasks_ops import TinyOps
 from lasy_ui.custom_widgets.task_text_widget import CustomPlainTextEditWDG
 from lasy_common_utils.date_time_utils import DateTime
+from lasy_ui.custom_widgets.custom_fonts_widget import define_font
 import getpass
 
 
@@ -19,9 +20,11 @@ class InputTaskBuild(QtWidgets.QWidget):
         self.create_layout()
 
     def create_widgets(self):
+        ubuntu_font = define_font()
         self.task_input_ptx = CustomPlainTextEditWDG()
         self.task_input_ptx.setMaximumWidth(450)
         self.task_input_ptx.setPlaceholderText("Start Typing...First Line is considered the Task Title")
+        self.task_input_ptx.setFont(ubuntu_font)
 
         self.end_date = QtWidgets.QDateEdit(calendarPopup=True)
         self.end_date.setDateTime(QtCore.QDateTime.currentDateTime())

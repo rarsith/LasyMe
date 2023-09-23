@@ -1,10 +1,10 @@
-import os
 import sys
 from PySide2 import QtWidgets
 from lasy_ui.lasy_me_main_window import LasyMeMainWindow
 
+
 qss_style_file = "lasy_ui/stylesheets/dark_orange/dark_orange_style.qss"
-print("Current working directory:", os.getcwd())
+
 def main():
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = LasyMeMainWindow()

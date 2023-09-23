@@ -1,9 +1,9 @@
 from PySide2 import QtWidgets, QtCore
 from lasy_common_utils.date_time_utils import DateTime
-
 from lasy_ops.tdb_priorities import Priorities
 from lasy_ops.tdb_statuses import Statuses
 from lasy_ops.tiny_ops.tasks_ops import TinyOps
+from lasy_ui.custom_widgets.custom_fonts_widget import define_font
 
 
 
@@ -23,6 +23,7 @@ class TaskProgressBarWDG(QtWidgets.QWidget):
         self.remaining_days_lb = QtWidgets.QLabel()
         self.remaining_days_lb.setMinimumWidth(10)
         self.remaining_days_lb.setMinimumHeight(10)
+        self.remaining_days_lb.setStyleSheet("background-color: transparent; color: silver;")
         self.remaining_days_lb.setAlignment(QtCore.Qt.AlignCenter)
 
     def create_layout(self):
@@ -40,12 +41,13 @@ class TaskEntityWDG(QtWidgets.QWidget):
         self.create_widgets()
 
     def create_widgets(self):
+        ubuntu_font = define_font()
         self.prog_bar = TaskProgressBarWDG()
 
         self.task_title_lb = QtWidgets.QLabel("-----------")
-        self.task_title_lb.setMinimumHeight(20)
-        self.task_title_lb.setMaximumHeight(20)
-        self.task_title_lb.setStyleSheet("background-color: transparent; color: black;")
+        self.task_title_lb.setStyleSheet(f"background-color: transparent; color: black;")
+        self.task_title_lb.setFont(ubuntu_font)
+        self.task_title_lb.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter) #QtCore.Qt.AlignmentFlag.AlignCenter |
 
         self.status_cb = QtWidgets.QComboBox()
         self.status_cb.addItems(Statuses().all_statuses)
