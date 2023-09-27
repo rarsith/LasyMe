@@ -21,7 +21,8 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
         self.record_current_sel_task.setDisabled(True)
 
         self.text_viewer_ptx = CustomPlainTextEditWDG()
-        self.text_viewer_ptx.setMinimumHeight(270)
+        self.text_viewer_ptx.setMinimumHeight(300)
+        self.text_viewer_ptx.setMaximumHeight(500)
         self.text_viewer_ptx.setFont(ubuntu_font)
 
         self.update_task_text_btn = QtWidgets.QPushButton("Update Task Briefing")
@@ -86,7 +87,7 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
 
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.addLayout(win_layout)
-        main_layout.addStretch(1)
+        # main_layout.addStretch(1)
         main_layout.addLayout(dates_layout)
         main_layout.addLayout(misc_layout)
         main_layout.addWidget(self.set_tags_wdg)
@@ -106,6 +107,7 @@ class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
     def create_connections(self):
         self.update_task_text_btn.clicked.connect(self.update_task_briefing_text)
         self.update_task_properties_btn.clicked.connect(self.update_task_properties)
+
 
     def update_task_properties(self):
         get_current_id = self.record_current_sel_task.text()

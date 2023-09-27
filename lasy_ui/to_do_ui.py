@@ -1,13 +1,14 @@
 import sys
 from PySide2 import QtWidgets
 
-
 from lasy_ui.tasks_viewer import ExistingTasksViewerCore
 from lasy_ui.tasks_properties_tabs import TaskPropertiesTabsBuild
 from lasy_ui.tasks_user_input import InputTaskBuildCore
 from lasy_ui.tasks_user_input_preview import TaskPreviewPropertiesCore
 from lasy_ui.tasks_viewer_tag_filter import TasksViewerTagFilterCore
-from lasy_ui.tasks_viewer_scope_status_filter import PrioStatusFilterButtonCore
+from lasy_ui.tasks_viewer_prios_filter import TasksPrioFilterCore
+from lasy_ui.tasks_viewer_status_filter import TasksStatusFilterCore
+from lasy_ui.custom_widgets.separator_widget import SeparatorWDG
 
 
 class ToDoMeMainCore(QtWidgets.QWidget):
@@ -23,22 +24,33 @@ class ToDoMeMainCore(QtWidgets.QWidget):
 
         self.tasks_tags_filter_viewer_wdg = TasksViewerTagFilterCore()
         self.tasks_viewer_wdg = ExistingTasksViewerCore()
-        self.tasks_prio_status_filter_wdg = PrioStatusFilterButtonCore()
+        self.tasks_prio_filter_wdg = TasksPrioFilterCore()
+        self.tasks_status_filter_wdg = TasksStatusFilterCore()
+
         self.task_input_wdg = InputTaskBuildCore()
         self.task_preview_properties_wdg = TaskPreviewPropertiesCore()
         self.task_properties_tabs_wdg = TaskPropertiesTabsBuild()
 
     def create_layout(self):
+        separator01 = SeparatorWDG()
+        separator02 = SeparatorWDG()
 
         viewer_and_input_layout = QtWidgets.QVBoxLayout()
         viewer_and_input_layout.addWidget(self.tasks_viewer_wdg)
         viewer_and_input_layout.addWidget(self.task_preview_properties_wdg)
         viewer_and_input_layout.addWidget(self.task_input_wdg)
 
+        filters_layout = QtWidgets.QVBoxLayout()
+        filters_layout.addWidget(self.tasks_prio_filter_wdg)
+        filters_layout.addWidget(separator01)
+        filters_layout.addWidget(separator02)
+        filters_layout.addWidget(self.tasks_status_filter_wdg)
+        filters_layout.addStretch(1)
+
         tags_viewer_layout = QtWidgets.QHBoxLayout()
         tags_viewer_layout.addWidget(self.tasks_tags_filter_viewer_wdg)
         tags_viewer_layout.addLayout(viewer_and_input_layout)
-        tags_viewer_layout.addWidget(self.tasks_prio_status_filter_wdg)
+        tags_viewer_layout.addLayout(filters_layout)
         tags_viewer_layout.setContentsMargins(0, 0, 0, 0)
 
 
@@ -69,7 +81,8 @@ class ToDoMeMainCore(QtWidgets.QWidget):
             connect(self.tasks_viewer_wdg.populate_tasks)
 
         self.tasks_tags_filter_viewer_wdg.tag_button_info.connect(self.tasks_viewer_wdg.populate_tasks_by_tags)
-        self.tasks_prio_status_filter_wdg.filter_prio_info.connect(self.tasks_viewer_wdg.populate_tasks_by_prio)
+        self.tasks_prio_filter_wdg.filter_prio_info.connect(self.tasks_viewer_wdg.populate_tasks_by_prio)
+        self.tasks_status_filter_wdg.filter_status_info.connect(self.tasks_viewer_wdg.populate_tasks_by_status)
 
         self.task_properties_tabs_wdg.task_tag_manager_wdg.create_tag_btn.clicked.\
             connect(self.tasks_tags_filter_viewer_wdg.update_tags)
@@ -85,6 +98,8 @@ class ToDoMeMainCore(QtWidgets.QWidget):
 
         self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked. \
             connect(self.tasks_tags_filter_viewer_wdg.update_tags)
+
+
 
     def set_preview_title(self):
         title_in = self.task_input_wdg.get_title()

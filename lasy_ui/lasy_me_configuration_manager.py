@@ -1,11 +1,12 @@
+import os
 import sys
-from  pathlib import Path
 from lasy_common_utils import files_utils as filops
 from lasy_common_utils import path_utils as patils
 from PySide2 import QtWidgets, QtCore
 from lasy_ops.schemas.config_schema import ConfigSchemaAttrNames, ConfigSchema
 from lasy_common_utils import config_file_utils
-from lasy_ops.connection import ConfigPath
+from lasy_ops.connection import LasyConnections
+from lasy_envars.envars import Envars
 
 
 class LasyFileDialog(QtWidgets.QWidget):
@@ -30,12 +31,12 @@ class LasyFileDialog(QtWidgets.QWidget):
 
 
 class LasyMeConfigurationManager(QtWidgets.QDialog):
-    closed = QtCore.Signal()
     def __init__(self, parent=None):
         super(LasyMeConfigurationManager, self).__init__(parent)
 
         self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowCloseButtonHint & ~QtCore.Qt.WindowContextHelpButtonHint)
         self.setWindowTitle("Lasy Configuration")
+
         self.create_widgets()
         self.create_layout()
         self.create_connections()
@@ -70,7 +71,6 @@ class LasyMeConfigurationManager(QtWidgets.QDialog):
         self.time_per_day_allocation_le.setPlaceholderText("min")
         self.time_per_day_allocation_le.setMaximumWidth(50)
 
-
         self.auto_status_management_chckb = QtWidgets.QCheckBox()
         self.auto_prio_management_chckb = QtWidgets.QCheckBox()
 
@@ -89,8 +89,8 @@ class LasyMeConfigurationManager(QtWidgets.QDialog):
 
         wdg_layout = QtWidgets.QFormLayout()
         wdg_layout.setAlignment(QtCore.Qt.AlignLeft)
-        wdg_layout.addRow("DB_ROOT_PATH ", path_input_layout)
-        wdg_layout.addWidget(separator01)
+        # wdg_layout.addRow("DB_ROOT_PATH ", path_input_layout)
+        # wdg_layout.addWidget(separator01)
         wdg_layout.addRow("WORK STARTS AT ", self.work_starts_at_le)
         wdg_layout.addRow("WORK ENDS AT ", self.work_ends_at_le)
         wdg_layout.addWidget(separator02)
@@ -118,24 +118,27 @@ class LasyMeConfigurationManager(QtWidgets.QDialog):
 
     def create_connections(self):
         self.open_browser_btn.clicked.connect(self.open_file_dialog)
-        self.save_btn.clicked.connect(self.write_config_file)
+        self.save_btn.clicked.connect(self.create_lasy_data)
+
         self.save_btn.clicked.connect(self.close)
         self.save_btn.clicked.connect(self.deleteLater)
+
         self.cancel_btn.clicked.connect(self.close)
         self.cancel_btn.clicked.connect(self.deleteLater)
-        self.cancel_btn.clicked.connect(self.close_event)
-        self.save_btn.clicked.connect(self.close_event)
+        # self.cancel_btn.clicked.connect(self.close_event)
+        # self.save_btn.clicked.connect(self.close_event)
 
-    def close_event(self, event):
-        print("Signal Emitted")
-        self.closed.emit()
-        # super().closeEvent(event)
+    def create_lasy_data(self):
+        root_path = patils.convert_path_to_universal(os.environ.get("LASY_DATA_ROOT"))
+        LasyConnections().create_implicit_structure(root_path)
+
+        # self.create_spec_first_run()
+        # self.write_default_config_file()
+        self.write_config_file()
 
     def gather_options(self):
         schema_attr_names = ConfigSchemaAttrNames()
         schema = ConfigSchema(schema_attr_names)
-
-        # default_databses_folder = patils.to_user_home_dir(parent_directory="lasy_databses")
         schema.root_path = self.db_root_path_le.text()
         schema.start_day = self.work_starts_at_le.text()
         schema.end_day = self.work_ends_at_le.text()
@@ -154,16 +157,20 @@ class LasyMeConfigurationManager(QtWidgets.QDialog):
         return get_all_options
 
     def write_config_file(self):
-        base_path = Path(ConfigPath)
+        base_path = LasyConnections().config_dir_path()
         config_file = self.gather_options()
         config_file_name = "lasy_config_data"
-        path_to_write_to = "../lasy_config"
+        filops.write_json(base_path, config_file_name, config_file)
+
+    def write_default_config_file(self):
+        base_path = LasyConnections().default_config_path()
+        config_file = self.create_default_config_file()
+        config_file_name = "lasy_default_config_data"
         filops.write_json(base_path, config_file_name, config_file)
 
     def open_file_dialog(self):
         response = QtWidgets.QFileDialog.getExistingDirectory(self, caption='Select a folder')
         if response:
-            print(response)
             self.db_root_path_le.setText(response)
 
     def custom_config_exists(self):
@@ -173,6 +180,7 @@ class LasyMeConfigurationManager(QtWidgets.QDialog):
     def populate_config(self):
         is_custom = self.custom_config_exists()
         if not is_custom:
+            self.write_default_config_file()
             print ("Loading Defaults. No custom config file found!")
             default_config = self.get_defaults()
             self.load_config(config_file=default_config)
@@ -181,19 +189,13 @@ class LasyMeConfigurationManager(QtWidgets.QDialog):
             self.load_config(config_file=custom_config)
 
     def get_defaults(self):
-        base_path = Path(ConfigPath)
-        default_config_file_path = "config_defaults"
-        default_config_file_name = "lasy_default_config_data.json"
-        full_path = base_path.joinpath(default_config_file_path, default_config_file_name)
-        get_config_data = filops.open_json(full_path)
+        base_path = LasyConnections().default_config_full_path()
+        get_config_data = filops.open_json(base_path)
         return get_config_data
 
     def get_custom(self):
-        base_path = Path(ConfigPath)
-        custom_config_file_path = "lasy_config_data.json"
-        full_path = base_path.joinpath(custom_config_file_path)
-        get_config_data = filops.open_json(full_path)
-        return get_config_data
+        config_file = LasyConnections().get_config_file_content()
+        return config_file
 
     def load_config(self, config_file):
         schema_attr_names = ConfigSchemaAttrNames()
@@ -211,17 +213,36 @@ class LasyMeConfigurationManager(QtWidgets.QDialog):
         self.auto_status_management_chckb.setChecked(config_file[schema_attr_names._auto_status_management])
         self.auto_prio_management_chckb.setChecked(config_file[schema_attr_names._auto_prio_management])
 
+    def create_default_config_file(self):
+        schema_attr_names = ConfigSchemaAttrNames()
+        schema = ConfigSchema(schema_attr_names)
+
+        schema.root_path = patils.to_user_home_dir()
+        schema.start_day = "10:00"
+        schema.end_day = "19:00"
+        schema.update_timer_interval = "60"
+        schema.database_backup_interval = "10"
+        schema.time_per_day = "300"
+
+        is_status_checked = False
+        schema.auto_status_mng = is_status_checked
+
+        is_prio_checked = False
+        schema.auto_prio_mng = is_prio_checked
+
+        get_all_options = schema.to_dict()
+
+        return get_all_options
+
 
 if __name__ == "__main__":
-    # try:
-    #     app.close()  # pylint: disable=E0601
-    #     app.deleteLater()
-    #     del (app)
-    # except:
-    #     print("instance not deleted")
-
+    import pprint
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = LasyMeConfigurationManager()
     test_dialog.show()
 
     sys.exit(app.exec_())
+
+    # cc = os.environ.get("LASY_DATA_ROOT")
+    # print(cc)
+    # pprint.pprint(dict(cc), width = 1)

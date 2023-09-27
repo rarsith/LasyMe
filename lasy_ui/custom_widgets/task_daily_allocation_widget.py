@@ -60,7 +60,6 @@ class TaskDailyAllocationBuild(QtWidgets.QWidget):
 
     def initialize_progress_bar(self):
         total_chunks = sum(chunk for chunk, _ in self.chunk_data)
-        print(total_chunks)
 
         # Set the range and initial value of the progress bar
         self.progress_bar.setMinimum(0)

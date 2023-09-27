@@ -1,0 +1,10 @@
+{
+    "db_root_path": "",
+    "auto_status_mng": true,
+    "auto_prio_mng": true,
+    "update_interval": "120",
+    "time_per_day_allocation": "240",
+    "database_backup_interval": "7",
+    "start_work_day": "10:00",
+    "end_work_day": "19:00"
+}

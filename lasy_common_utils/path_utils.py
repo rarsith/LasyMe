@@ -18,6 +18,15 @@ def convert_path_to_universal(path_to_convert):
     return universal_path
 
 
+def create_implicit_structure(root_path):
+    lasyme_container = "lasyme_data"
+    lasy_databases_folder = "lasy_databases"
+    lasy_configuration_folder = "lasy_config"
+    lasy_default_configuration_folder = "config_defaults"
+    lasy_default_configuration_file = "lasy_default_config_data.json"
+
+
+
 if __name__ == "__main__":
     home_usr = to_user_home_dir("lasy_me_databases")
     print(home_usr)

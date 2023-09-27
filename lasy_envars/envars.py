@@ -1,53 +1,27 @@
 import os
+import platform
 
-class Envars():
+class Envars:
 
-    @property
-    def os_root(self):
-        return os.environ.get('LASY_ROOT')
+    def set_environment_variable(self,env_var_name ,env_var_value):
+        if not self.check_if_exists(env_var_name):
+            os_name = platform.system()
+            if os_name == 'Windows':
+                # os.environ[env_var_name] = env_var_value
+                os.system(f'setx {env_var_name} "{env_var_value}"')
+                print(f'Set environment variable {env_var_name} to {env_var_value} on Windows.')
 
-    @os_root.setter
-    def os_root(self, value):
-        os.environ['LASY_ROOT'] = value
+            elif os_name == 'Darwin':
+                with open(os.path.expanduser("~/.bash_profile"), "a") as file:
+                    file.write(f"export {env_var_name}='{env_var_value}'\n")
+                print(f'Appended environment variable {env_var_name} to .bash_profile on macOS.')
 
-    @property
-    def lasy_id(self):
-        return os.environ.get('LASY_ID')
+            elif os_name == 'Linux':
+                with open(os.path.expanduser("~/.bashrc"), "a") as file:
+                    file.write(f"export {env_var_name}='{env_var_value}'\n")
+                print(f'Appended environment variable {env_var_name} to .bashrc on Linux.')
+            else:
+                print(f'Unsupported operating system: {os_name}')
 
-    @lasy_id.setter
-    def lasy_id(self, value):
-        os.environ['LASY_ID'] = value
-
-    @property
-    def current_tags(self):
-        envar_value = os.environ.get('LASY_TAGS')
-        delimiter = ","
-        if delimiter in envar_value:
-            elements = envar_value.split(delimiter)
-            return elements
-        return [envar_value]
-
-    @current_tags.setter
-    def current_tags(self, value: list):
-        list_to_str = ','.join(map(str, value))
-        os.environ['LASY_TAGS'] = list_to_str
-
-    @property
-    def current_prios(self):
-        return os.environ.get('LASY_PRIOS')
-
-    @current_prios.setter
-    def current_prios(self, value):
-        os.environ['LASY_PRIOS'] = value
-
-    @property
-    def current_statuses(self):
-        return os.environ.get('LASY_STATUSES')
-
-    @current_statuses.setter
-    def current_statuses(self, value):
-        os.environ['LASY_STATUSES'] = value
-
-    def taget_path(self, *args):
-        path = '.'.join(args)
-        return path
+    def check_if_exists(self, env_var_name):
+        return env_var_name in os.environ

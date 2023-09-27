@@ -1,13 +1,14 @@
 import os
 from PySide2.QtGui import QFont, QFontDatabase
 from PySide2.QtGui import QFontDatabase
-from lasy_ops.connection import LasyMeRoot
+# from lasy_ops.connection import LasyMeRoot
+from lasy_ops.connection import LasyConnections
 from pathlib import Path
 
 
 external = ["lasy_external", "fonts", "roboto"]
 target_font = "RobotoCondensed-Regular.ttf"
-full_path = os.path.join(LasyMeRoot, *external, target_font)
+full_path = os.path.join(LasyConnections().lasy_root_path, *external, target_font)
 
 def define_font():
     font_id = QFontDatabase.addApplicationFont(full_path)

@@ -23,7 +23,7 @@ class TaskTagsWDG(QtWidgets.QWidget):
         self.task_tags_cb = QtWidgets.QComboBox()
         self.task_tags_cb.addItems(self.get_db_tags())
         self.task_tags_lw = QtWidgets.QListWidget()
-        self.task_tags_lw.setMaximumHeight(100)
+        # self.task_tags_lw.setMaximumHeight(100)
 
         self.clear_btn = QtWidgets.QPushButton("Clear")
         self.clear_btn.setMaximumWidth(40)
@@ -49,7 +49,13 @@ class TaskTagsWDG(QtWidgets.QWidget):
                 self.task_tags_lw.addItem(item)
 
     def clear_tags_list(self):
-        self.task_tags_lw.clear()
+        selected_items = self.task_tags_lw.selectedItems()
+        if not selected_items:
+            self.task_tags_lw.clear()
+
+        for item in selected_items:
+            row = self.task_tags_lw.row(item)
+            self.task_tags_lw.takeItem(row)
 
     def add_item_to_list_wdg(self, index):
         selected_item = self.task_tags_cb.currentText()

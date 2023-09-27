@@ -50,9 +50,11 @@ class TaskEntityWDG(QtWidgets.QWidget):
         self.task_title_lb.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter) #QtCore.Qt.AlignmentFlag.AlignCenter |
 
         self.status_cb = QtWidgets.QComboBox()
+        self.status_cb.wheelEvent = lambda event: None
         self.status_cb.addItems(Statuses().all_statuses)
 
         self.prio_cb = QtWidgets.QComboBox()
+        self.prio_cb.wheelEvent = lambda event: None
         self.prio_cb.addItems(Priorities().all_priorities)
 
         self.edit_btn = QtWidgets.QPushButton("Edit")
@@ -73,8 +75,11 @@ class TaskEntityWDG(QtWidgets.QWidget):
 
         time_left_interval = DateTime().today_to_end_day(end_day=end_date)
         percentage_interval = DateTime().get_time_elapsed(start_day=start_date, end_day=end_date, percentage=True)
-        self.prog_bar.progress_bar.setValue(int(percentage_interval))
         self.prog_bar.remaining_days_lb.setText(str(time_left_interval))
+        if percentage_interval <=100:
+            self.prog_bar.progress_bar.setValue(int(percentage_interval))
+        else:
+            self.prog_bar.progress_bar.setValue(100)
 
         progress_bar_curr_val = self.prog_bar.progress_bar.value()
 
@@ -115,7 +120,7 @@ class TaskEntityWDG(QtWidgets.QWidget):
             text-align: center;
             background-color: rgba(33, 37, 43, 180);
             color: black;}
-            QProgressBar::chunk {background-color: #ee3e32;}""")
+            QProgressBar::chunk {background-color: #990000;}""")
         return percentage_interval
 
     def get_task_title(self):

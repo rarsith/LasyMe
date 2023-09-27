@@ -22,3 +22,13 @@ def open_json(source_file) -> dict:
     with open(source_file, 'r') as json_read:
         read_buffer = json.load(json_read)
     return read_buffer
+
+def create_file(target_path, file_name):
+    if not os.path.exists(target_path):
+        try:
+            os.makedirs(target_path)
+        except Exception as e:
+            print(e)
+            raise
+    with open(os.path.join(target_path, file_name), "w") as file:
+        file.write("App ran first time!")

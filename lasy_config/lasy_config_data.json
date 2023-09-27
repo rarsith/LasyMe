@@ -1,0 +1,10 @@
+{
+    "db_root_path": "D:/WORK/TEST_LASY",
+    "auto_status_mng": false,
+    "auto_prio_mng": false,
+    "update_interval": "",
+    "time_per_day_allocation": "",
+    "database_backup_interval": "",
+    "start_work_day": "",
+    "end_work_day": ""
+}
