@@ -120,6 +120,8 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
             return
 
     def populate_tasks_custom(self, key_to_sort, descending=False):
+        get_selected = self.keep_selected_buffer()
+
         get_current_content_ids = self.get_view_entries(6)
         all_documents = self.tiny_ops.get_docs_by_id(get_current_content_ids)
         sorted_tasks = dict(sorted(all_documents.items(), key=lambda item: item[1][key_to_sort], reverse=descending))
@@ -130,6 +132,8 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
                 root_item = self.task_viewer_trw.invisibleRootItem()
                 self.add_custom_widget(root_item, task_id=key)
             self.task_viewer_trw.expandAll()
+
+        self.restore_selected_buffer(get_selected)
 
     def define_query_criteria(self):
         criteria = dict()
@@ -146,6 +150,8 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         return criteria
 
     def populate_by_criteria(self, criteria):
+        get_selected = self.keep_selected_buffer()
+
         if len(criteria) != 0:
             all_documents = self.tiny_ops.get_docs_by_multiple_keys(criteria=criteria)
         else:
@@ -159,6 +165,7 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
                 extracted_tasks_for_today = self.tiny_ops.get_tasks_by_remaining_time(tasks_ids=all_documents.keys(),
                                                                                       reference_max=3)
                 self.populate_by_ids_list(extracted_tasks_for_today)
+                self.restore_selected_buffer(get_selected)
             else:
                 if len(criteria) != 0:
                     all_documents = self.tiny_ops.get_docs_by_multiple_keys(criteria=criteria)
@@ -170,6 +177,7 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
                     self.add_custom_widget(root_item, task_id=key)
 
                     self.task_viewer_trw.expandAll()
+                    self.restore_selected_buffer(get_selected)
         else:
             return
 
@@ -218,6 +226,8 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         return self.all_documents
 
     def populate_tasks_to_list(self, key_to_sort, order_ref=[]):
+        get_selected = self.keep_selected_buffer()
+
         get_current_content_ids = self.get_view_entries(6)
         all_documents = self.tiny_ops.get_docs_by_id(get_current_content_ids)
         sorted_tasks = dict(sorted(all_documents.items(), key=lambda item: order_ref.index(item[1][key_to_sort])))
@@ -228,11 +238,39 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
                 self.add_custom_widget(root_item, task_id=key)
             self.task_viewer_trw.expandAll()
 
+        self.restore_selected_buffer(get_selected)
+
+    def keep_selected_buffer(self):
+        selected_items = []
+        for item in self.task_viewer_trw.selectedItems():
+            text = item.text(6)
+            selected_items.append(text)
+        return selected_items
+
+    def restore_selected_buffer(self, selected_items):
+        for row_index in range(self.task_viewer_trw.topLevelItemCount()):
+
+            item = self.task_viewer_trw.topLevelItem(row_index)
+
+            if item:
+                column_index = 6
+                cell_value = item.text(column_index)
+
+                if len(selected_items) != 0:
+                    if cell_value == selected_items[0]:
+
+                        item.setSelected(True)
+                        break
+
     def populate_tasks(self):
+        get_selected = self.keep_selected_buffer()
+
         criteria_def = self.define_query_criteria()
         self.populate_by_criteria(criteria_def)
 
         self.get_current_filter()
+
+        self.restore_selected_buffer(get_selected)
 
     def clear_duplicates(self):
         get_current_content_ids = self.get_view_entries(6)

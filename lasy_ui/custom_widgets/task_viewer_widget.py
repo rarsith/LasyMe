@@ -3,9 +3,8 @@ from PySide2 import QtWidgets, QtCore
 
 class CustomDelegate(QtWidgets.QStyledItemDelegate):
     def sizeHint(self, option, index):
-        # Customize the height of each item in the QTreeWidget
         size_hint = super().sizeHint(option, index)
-        size_hint.setHeight(30)  # Set your desired height here
+        size_hint.setHeight(30)
         return size_hint
 
     def initStyleOption(self, option, index):

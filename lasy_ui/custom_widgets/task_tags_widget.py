@@ -1,92 +1,113 @@
-from PySide2 import QtWidgets
+from PySide2 import QtWidgets, QtCore
 
 from lasy_ops.tdb_attributes_definitions import TagsAttributesDefinitions
 from lasy_ops.tdb_attributes_paths import TagsAttributesPaths
 from lasy_ops.tiny_ops.tags_ops import TagsOps
 from lasy_ops.tiny_ops.tasks_ops import TinyOps
 
-class TaskTagsWDG(QtWidgets.QWidget):
+
+class TagFilterButtonWDG(QtWidgets.QPushButton):
+    def __init__(self, name, parent=None):
+        super(TagFilterButtonWDG, self).__init__(parent)
+
+        self.button_name = name
+        self.set_button_name()
+
+    def set_button_name(self):
+        self.setText(self.button_name)
+
+
+class TasksViewerTagAssignerCore(QtWidgets.QWidget):
+    assign_tag_button_info = QtCore.Signal(dict)
 
     def __init__(self, parent=None):
-        super(TaskTagsWDG, self).__init__(parent)
-
-        self.tag_key_definitions = TagsAttributesDefinitions()
-        self.taops = TagsOps()
-        self.tops = TinyOps()
-        self.tags_attr_paths = TagsAttributesPaths(self.tag_key_definitions)
+        super(TasksViewerTagAssignerCore, self).__init__(parent)
 
         self.create_widgets()
         self.create_layout()
         self.create_connections()
+        self.update_tags()
 
     def create_widgets(self):
-        self.task_tags_cb = QtWidgets.QComboBox()
-        self.task_tags_cb.addItems(self.get_db_tags())
-        self.task_tags_lw = QtWidgets.QListWidget()
-        # self.task_tags_lw.setMaximumHeight(100)
-
-        self.clear_btn = QtWidgets.QPushButton("Clear")
-        self.clear_btn.setMaximumWidth(40)
+        self.refresh_btn = QtWidgets.QPushButton("Refresh Tags List")
+        self.refresh_btn.setMaximumWidth(100)
 
     def create_layout(self):
-        list_button_layout = QtWidgets.QHBoxLayout()
-        list_button_layout.addWidget(self.task_tags_cb)
-        list_button_layout.addWidget(self.clear_btn)
+        self.buttons_layout = QtWidgets.QGridLayout()
 
-        main_layout = QtWidgets.QVBoxLayout(self)
-        main_layout.addWidget(self.task_tags_lw)
-        main_layout.addLayout(list_button_layout)
+        self.main_layout = QtWidgets.QVBoxLayout(self)
+        self.main_layout.addWidget(self.refresh_btn)
+        self.main_layout.setContentsMargins(0,0,0,0)
 
     def create_connections(self):
-        self.task_tags_cb.activated.connect(self.add_item_to_list_wdg)
-        self.clear_btn.clicked.connect(self.clear_tags_list)
+        self.refresh_btn.clicked.connect(self.update_tags)
 
-    def populate_list(self, items: list):
-        already_used = self.get_assigned_tags()
-        for item in items:
-            if item not in already_used:
-                item = QtWidgets.QListWidgetItem(item)
-                self.task_tags_lw.addItem(item)
+    def update_tags(self):
+        self.tag_key_definitions = TagsAttributesDefinitions()
+        self.taops = TagsOps()
 
-    def clear_tags_list(self):
-        selected_items = self.task_tags_lw.selectedItems()
-        if not selected_items:
-            self.task_tags_lw.clear()
+        store_active = self.get_active_buttons()
 
-        for item in selected_items:
-            row = self.task_tags_lw.row(item)
-            self.task_tags_lw.takeItem(row)
+        self.clear_layout()
+        get_all_tags = self.taops.get_all_documents(ids=True)
+        if get_all_tags:
+            buttons_names = []
+            for tag_id, docs in get_all_tags.items():
+                tag_name = docs[self.tag_key_definitions.name]
+                buttons_names.append(tag_name)
 
-    def add_item_to_list_wdg(self, index):
-        selected_item = self.task_tags_cb.currentText()
-        already_used = self.get_assigned_tags()
+            for i, button_name in enumerate(buttons_names):
+                self.button = TagFilterButtonWDG(name=button_name)
+                self.button.clicked.connect(self.transmit_name)
+                self.button.setCheckable(True)
+                self.buttons_layout.addWidget(self.button, i // 3, i % 3)
 
-        if selected_item not in already_used:
-            item = QtWidgets.QListWidgetItem(selected_item)
-            self.task_tags_lw.addItem(item)
-        else:
-            print ("Tag already assigned!")
+        self.main_layout.addLayout(self.buttons_layout)
+        self.main_layout.addStretch(1)
+        self.main_layout.addWidget(self.refresh_btn)
+        self.setLayout(self.main_layout)
 
-    def return_tags(self):
-        current_tags = self.get_assigned_tags()
-        return current_tags
+        self.activate_tags(store_active)
 
-    def get_db_tags(self):
-        all_tags = self.taops.get_all_documents()
-        tag_names = [tag[self.tag_key_definitions.name] for tag in all_tags]
-        return tag_names
 
-    def refresh_tag_box(self):
-        self.task_tags_cb.clear()
-        self.task_tags_cb.addItems(self.get_db_tags())
+    def clear_layout(self):
+        while self.main_layout.count():
+            item = self.main_layout.takeAt(0)
+            widget = item.widget()
+            if widget and widget != self.refresh_btn:
+                widget.deleteLater()
 
-    def get_assigned_tags(self):
-        items = []
-        for index in range(self.task_tags_lw.count()):
-            item = self.task_tags_lw.item(index)
-            if item:
-                items.append(item.text())
-        return items
+    def activate_tags(self, buttons_names):
+        self.reset_uncheck_all_buttons()
+        if buttons_names:
+            get_all_buttons_wdg = []
+            for index in range(self.buttons_layout.count()):
+                widget = self.buttons_layout.itemAt(index).widget()
+                if isinstance(widget, QtWidgets.QPushButton):
+                    get_all_buttons_wdg.append(widget)
+            for tag_name in buttons_names:
+                for button in get_all_buttons_wdg:
+                    if tag_name == button.text():
+                        button.setChecked(True)
+        return
+
+    def reset_uncheck_all_buttons(self):
+        for index in range(self.buttons_layout.count()):
+            widget = self.buttons_layout.itemAt(index).widget()
+            widget.setChecked(False)
+
+    def transmit_name(self):
+        get_active_tags = self.get_active_buttons()
+        self.assign_tag_button_info.emit({"assigned_tags": get_active_tags})
+
+    def get_active_buttons(self):
+        active_buttons = []
+        for index in range(self.buttons_layout.count()):
+            widget = self.buttons_layout.itemAt(index).widget()
+            if isinstance(widget, QtWidgets.QPushButton) and widget.isChecked():
+                active_buttons.append(widget.text())
+        return active_buttons
+
 
 
 if __name__ == "__main__":

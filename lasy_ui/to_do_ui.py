@@ -26,7 +26,6 @@ class ToDoMeMainCore(QtWidgets.QWidget):
         self.tasks_viewer_wdg = ExistingTasksViewerCore()
         self.tasks_prio_filter_wdg = TasksPrioFilterCore()
         self.tasks_status_filter_wdg = TasksStatusFilterCore()
-
         self.task_input_wdg = InputTaskBuildCore()
         self.task_preview_properties_wdg = TaskPreviewPropertiesCore()
         self.task_properties_tabs_wdg = TaskPropertiesTabsBuild()
@@ -35,11 +34,6 @@ class ToDoMeMainCore(QtWidgets.QWidget):
         separator01 = SeparatorWDG()
         separator02 = SeparatorWDG()
 
-        viewer_and_input_layout = QtWidgets.QVBoxLayout()
-        viewer_and_input_layout.addWidget(self.tasks_viewer_wdg)
-        viewer_and_input_layout.addWidget(self.task_preview_properties_wdg)
-        viewer_and_input_layout.addWidget(self.task_input_wdg)
-
         filters_layout = QtWidgets.QVBoxLayout()
         filters_layout.addWidget(self.tasks_prio_filter_wdg)
         filters_layout.addWidget(separator01)
@@ -47,17 +41,24 @@ class ToDoMeMainCore(QtWidgets.QWidget):
         filters_layout.addWidget(self.tasks_status_filter_wdg)
         filters_layout.addStretch(1)
 
-        tags_viewer_layout = QtWidgets.QHBoxLayout()
-        tags_viewer_layout.addWidget(self.tasks_tags_filter_viewer_wdg)
+        viewer_and_input_layout = QtWidgets.QHBoxLayout()
+        viewer_and_input_layout.addWidget(self.tasks_viewer_wdg)
+        viewer_and_input_layout.addLayout(filters_layout)
+        viewer_and_input_layout.addWidget(self.task_properties_tabs_wdg)
+
+        tags_viewer_layout = QtWidgets.QVBoxLayout()
         tags_viewer_layout.addLayout(viewer_and_input_layout)
+        tags_viewer_layout.addWidget(self.task_preview_properties_wdg)
+        tags_viewer_layout.addWidget(self.task_input_wdg)
+
         tags_viewer_layout.addLayout(filters_layout)
         tags_viewer_layout.setContentsMargins(0, 0, 0, 0)
 
-
         main_layout = QtWidgets.QHBoxLayout(self)
+        main_layout.addWidget(self.tasks_tags_filter_viewer_wdg)
         main_layout.addLayout(tags_viewer_layout)
-        main_layout.addLayout(viewer_and_input_layout)
-        main_layout.addWidget(self.task_properties_tabs_wdg)
+
+
 
     def create_connections(self):
         self.task_input_wdg.create_task_btn.clicked.connect(self.tasks_viewer_wdg.refresh_all)
@@ -68,9 +69,6 @@ class ToDoMeMainCore(QtWidgets.QWidget):
         self.task_input_wdg.med_prio_btn.clicked.connect(self.set_preview_med_prio)
         self.task_input_wdg.high_prio_btn.clicked.connect(self.set_preview_high_prio)
         self.task_input_wdg.critical_prio_btn.clicked.connect(self.set_preview_critical_prio)
-        self.task_input_wdg.thirty_min_btn.clicked.connect(self.set_preview_duration_thirty)
-        self.task_input_wdg.sixty_min_btn.clicked.connect(self.set_preview_duration_sixty)
-        self.task_input_wdg.ninety_min_btn.clicked.connect(self.set_preview_duration_ninety)
 
         self.tasks_viewer_wdg.task_document_retrieval.connect\
             (self.task_properties_tabs_wdg.task_properties_wdg.populate_all_widgets)
@@ -81,14 +79,19 @@ class ToDoMeMainCore(QtWidgets.QWidget):
             connect(self.tasks_viewer_wdg.populate_tasks)
 
         self.tasks_tags_filter_viewer_wdg.tag_button_info.connect(self.tasks_viewer_wdg.populate_tasks_by_tags)
+
         self.tasks_prio_filter_wdg.filter_prio_info.connect(self.tasks_viewer_wdg.populate_tasks_by_prio)
+
         self.tasks_status_filter_wdg.filter_status_info.connect(self.tasks_viewer_wdg.populate_tasks_by_status)
 
         self.task_properties_tabs_wdg.task_tag_manager_wdg.create_tag_btn.clicked.\
             connect(self.tasks_tags_filter_viewer_wdg.update_tags)
 
+        self.task_properties_tabs_wdg.task_properties_wdg.set_tags_wdg.assign_tag_button_info. \
+            connect(self.task_properties_tabs_wdg.task_properties_wdg.update_per_click_tags)
+
         self.task_properties_tabs_wdg.task_tag_manager_wdg.create_tag_btn.clicked. \
-            connect(self.task_properties_tabs_wdg.task_properties_wdg.set_tags_wdg.refresh_tag_box)
+            connect(self.task_properties_tabs_wdg.task_properties_wdg.set_tags_wdg.update_tags)
 
         self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked.\
             connect(self.tasks_tags_filter_viewer_wdg.update_tags)
@@ -98,8 +101,6 @@ class ToDoMeMainCore(QtWidgets.QWidget):
 
         self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked. \
             connect(self.tasks_tags_filter_viewer_wdg.update_tags)
-
-
 
     def set_preview_title(self):
         title_in = self.task_input_wdg.get_title()
@@ -128,21 +129,6 @@ class ToDoMeMainCore(QtWidgets.QWidget):
     def set_preview_critical_prio(self):
         prio_in = self.task_input_wdg.set_to_critical_prio()
         self.task_preview_properties_wdg.update_priority_wdg(prio_in)
-
-    def set_preview_duration_thirty(self):
-        duration_in = self.task_input_wdg.set_time_thirty()
-        self.task_preview_properties_wdg.update_duration_wdg(duration_in)
-
-    def set_preview_duration_sixty(self):
-        duration_in = self.task_input_wdg.set_time_sixty()
-        self.task_preview_properties_wdg.update_duration_wdg(duration_in)
-
-    def set_preview_duration_ninety(self):
-        duration_in = self.task_input_wdg.set_time_ninety()
-        self.task_preview_properties_wdg.update_duration_wdg(duration_in)
-
-
-
 
 
 if __name__ == "__main__":

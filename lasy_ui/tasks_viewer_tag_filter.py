@@ -1,6 +1,4 @@
 from PySide2 import QtWidgets, QtCore
-
-
 from lasy_ops.tiny_ops.tags_ops import TagsOps
 from lasy_ops.schemas.tags_schema import TagsSchema
 from lasy_ops.tdb_attributes_definitions import TagsAttributesDefinitions
@@ -17,33 +15,28 @@ class TagFilterButtonWDG(QtWidgets.QPushButton):
         self.setText(self.button_name)
 
 
-class TasksViewerTagFilterBuild(QtWidgets.QWidget):
-    def __init__(self, parent=None):
-        super(TasksViewerTagFilterBuild, self).__init__(parent)
-
-        self.create_widgets()
-        self.create_layout()
-
-    def create_widgets(self):
-        self.refresh_btn = QtWidgets.QPushButton("Refresh Tags List")
-        self.refresh_btn.setMaximumWidth(100)
-
-    def create_layout(self):
-        self.main_layout = QtWidgets.QVBoxLayout(self)
-        self.main_layout.addWidget(self.refresh_btn)
-        self.main_layout.setContentsMargins(0,0,0,0)
-
-
-class TasksViewerTagFilterCore(TasksViewerTagFilterBuild):
+class TasksViewerTagFilterCore(QtWidgets.QWidget):
     tag_button_info = QtCore.Signal(dict)
 
     def __init__(self, parent=None):
         super(TasksViewerTagFilterCore, self).__init__(parent)
 
+        self.create_widgets()
+        self.create_layout()
         self.create_connections()
         self.update_tags()
 
+
+    def create_widgets(self):
+        self.refresh_btn = QtWidgets.QPushButton("Refresh Tags List")
+        self.refresh_btn.setMaximumWidth(100)
+    def create_layout(self):
+        self.main_layout = QtWidgets.QVBoxLayout(self)
+        self.main_layout.addWidget(self.refresh_btn)
+        self.main_layout.setContentsMargins(0,0,0,0)
+
     def create_connections(self):
+
         self.refresh_btn.clicked.connect(self.update_tags)
 
     def update_tags(self):
@@ -74,9 +67,6 @@ class TasksViewerTagFilterCore(TasksViewerTagFilterBuild):
 
     def transmit_name(self):
         get_active_tags = self.get_active_buttons()
-        # Envars().current_tags = get_active_tags
-        # retrieved_tags_list = list(map(int, get_active_tags.split(',')))
-        # print(Envars().current_tags)
         self.tag_button_info.emit({"tags": get_active_tags})
 
     def get_active_buttons(self):
@@ -89,9 +79,15 @@ class TasksViewerTagFilterCore(TasksViewerTagFilterBuild):
 
 
 if __name__ == "__main__":
+    import os
     import sys
+
+    os.environ["LASY_DATA_ROOT"] = 'C:\\Users\\arsithra\\PycharmProjects\\LasyMe'
+
+    button_n = ['project_', 'LasyMe_TODOs']
 
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = TasksViewerTagFilterCore()
+    test_dialog.activate_buttons(button_n)
     test_dialog.show()
     sys.exit(app.exec_())

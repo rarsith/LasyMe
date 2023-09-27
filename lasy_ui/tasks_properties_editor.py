@@ -4,8 +4,9 @@ from lasy_ui.custom_widgets.task_text_widget import CustomPlainTextEditWDG
 from lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
 from lasy_ops.tdb_attributes_paths import TasksAttributesPaths
 from lasy_ops.tiny_ops.tasks_ops import TinyOps
-from lasy_ui.custom_widgets.task_tags_widget import TaskTagsWDG
+from lasy_ui.custom_widgets.task_tags_widget import TasksViewerTagAssignerCore #TaskTagsWDG
 from lasy_ui.custom_widgets.custom_fonts_widget import define_font
+from lasy_ui.custom_widgets.separator_widget import SeparatorWDG
 
 
 class TaskPropertiesEditorBuild(QtWidgets.QWidget):
@@ -34,7 +35,7 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
 
         self.assined_to_cb = QtWidgets.QComboBox()
         self.assined_to_cb.setObjectName("AssinedToCB")
-        self.assined_to_cb.addItems(["julius", "martin", "mikkel"])
+        self.assined_to_cb.addItems(["--no DUDES--no DUDDESESS"])
         self.assined_to_cb.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
 
 
@@ -43,7 +44,7 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
         self.end_date_interval_dte = QtWidgets.QDateEdit(calendarPopup=True)
         self.end_date_interval_dte.setCalendarPopup(True)
 
-        self.set_tags_wdg = TaskTagsWDG()
+        self.set_tags_wdg = TasksViewerTagAssignerCore()
 
         self.update_task_properties_btn = QtWidgets.QPushButton("Update Task Properties")
         self.update_task_properties_btn.setMinimumHeight(40)
@@ -56,6 +57,9 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
         self.tags_lb = QtWidgets.QLabel("Tags")
 
     def create_layout(self):
+        separator01 = SeparatorWDG()
+        separator02 = SeparatorWDG()
+
         win_layout = QtWidgets.QVBoxLayout()
         win_layout.addWidget(self.record_current_sel_task)
         win_layout.addWidget(self.text_viewer_ptx)
@@ -87,11 +91,13 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
 
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.addLayout(win_layout)
-        # main_layout.addStretch(1)
         main_layout.addLayout(dates_layout)
         main_layout.addLayout(misc_layout)
-        main_layout.addWidget(self.set_tags_wdg)
         main_layout.addWidget(self.update_task_properties_btn)
+        main_layout.addWidget(separator01)
+        main_layout.addWidget(separator02)
+        main_layout.addWidget(self.set_tags_wdg)
+
 
 
 class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
@@ -109,6 +115,15 @@ class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
         self.update_task_properties_btn.clicked.connect(self.update_task_properties)
 
 
+    def update_dates(self):
+        get_current_id = self.record_current_sel_task.text()
+        get_start_date_raw = self.start_date_interval_dte.date()
+        get_start_date = get_start_date_raw.toString("yyyy-MM-dd")
+        get_end_date_raw = self.end_date_interval_dte.date()
+        get_end_date = get_end_date_raw.toString("yyyy-MM-dd")
+        self.tops.update_task(int(get_current_id), self.task_attr_paths.start_interval(get_start_date))
+        self.tops.update_task(int(get_current_id), self.task_attr_paths.end_interval(get_end_date))
+
     def update_task_properties(self):
         get_current_id = self.record_current_sel_task.text()
 
@@ -119,14 +134,18 @@ class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
         get_end_date = get_end_date_raw.toString("yyyy-MM-dd")
 
         get_owner = self.created_by_le.text()
-        get_tags = self.set_tags_wdg.return_tags()
+        # get_tags = self.set_tags_wdg.get_active_buttons()
 
         self.tops.update_task(int(get_current_id), self.task_attr_paths.start_interval(get_start_date))
         self.tops.update_task(int(get_current_id), self.task_attr_paths.end_interval(get_end_date))
         self.tops.update_task(int(get_current_id), self.task_attr_paths.task_created_by(get_owner))
-        self.tops.update_task(int(get_current_id), self.task_attr_paths.tags(get_tags))
+        # self.tops.update_task(int(get_current_id), self.task_attr_paths.tags(get_tags))
 
-        self.set_tags_wdg.task_tags_lw.clear()
+    @Slot(dict)
+    def update_per_click_tags(self, current_tags_selection):
+        get_emitted_tags = current_tags_selection["assigned_tags"]
+        get_current_id = self.record_current_sel_task.text()
+        self.tops.update_task(int(get_current_id), self.task_attr_paths.tags(get_emitted_tags))
 
     def update_task_briefing_text(self):
         get_current_title = self.text_viewer_ptx.get_title()
@@ -171,15 +190,17 @@ class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
 
     def load_tags(self, task_doc: dict):
         tags = task_doc[self.doc_attrib.tags]
-        self.set_tags_wdg.task_tags_lw.clear()
-        self.set_tags_wdg.populate_list(tags)
+        self.set_tags_wdg.activate_tags(tags)
 
     def load_task_id(self, task_id):
         self.record_current_sel_task.setText(task_id)
 
 
 if __name__ == "__main__":
+    import os
     import sys
+
+    os.environ["LASY_DATA_ROOT"] = 'C:\\Users\\arsithra\\PycharmProjects\\LasyMe'
 
     task_sample = {"task_title": "new Task Title",
                    "parent": "root",
@@ -194,16 +215,16 @@ if __name__ == "__main__":
                    "status": "Init",
                    "active": True,
                    "task_details": ["", "Details details"],
-                   "tags": ""}
+                   "tags": ['project_', 'LasyMe_TODOs']}
 
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = TaskPropertiesEditorCore()
 
     # reformatted_text = test_dialog.get_full_text_from_task_doc(task_sample)
     # test_dialog.load_task_text(reformatted_text)
-    # test_dialog.load_dates(task_sample)
-    # test_dialog.load_user(task_sample)
-    # test_dialog.load_tag(task_sample)
+    test_dialog.load_dates(task_sample)
+    test_dialog.load_user(task_sample)
+    test_dialog.load_tags(task_sample)
 
     test_dialog.show()
     sys.exit(app.exec_())

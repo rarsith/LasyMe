@@ -125,15 +125,10 @@ class LasyMeConfigurationManager(QtWidgets.QDialog):
 
         self.cancel_btn.clicked.connect(self.close)
         self.cancel_btn.clicked.connect(self.deleteLater)
-        # self.cancel_btn.clicked.connect(self.close_event)
-        # self.save_btn.clicked.connect(self.close_event)
 
     def create_lasy_data(self):
         root_path = patils.convert_path_to_universal(os.environ.get("LASY_DATA_ROOT"))
         LasyConnections().create_implicit_structure(root_path)
-
-        # self.create_spec_first_run()
-        # self.write_default_config_file()
         self.write_config_file()
 
     def gather_options(self):

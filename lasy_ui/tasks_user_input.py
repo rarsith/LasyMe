@@ -14,7 +14,6 @@ class InputTaskBuild(QtWidgets.QWidget):
         super(InputTaskBuild, self).__init__(parent)
 
         self.setMaximumHeight(180)
-        # self.setMaximumWidth(600)
 
         self.create_widgets()
         self.create_layout()
@@ -22,25 +21,33 @@ class InputTaskBuild(QtWidgets.QWidget):
     def create_widgets(self):
         ubuntu_font = define_font()
         self.task_input_ptx = CustomPlainTextEditWDG()
-        self.task_input_ptx.setMaximumWidth(450)
+        self.task_input_ptx.setMinimumWidth(650)
+        self.task_input_ptx.setMaximumWidth(700)
         self.task_input_ptx.setPlaceholderText("Start Typing...First Line is considered the Task Title")
         self.task_input_ptx.setFont(ubuntu_font)
 
         self.end_date = QtWidgets.QDateEdit(calendarPopup=True)
         self.end_date.setDateTime(QtCore.QDateTime.currentDateTime())
 
-        self.thirty_min_btn = QtWidgets.QPushButton("30")
-        self.sixty_min_btn = QtWidgets.QPushButton("60")
-        self.ninety_min_btn = QtWidgets.QPushButton("90")
+        button_minimum_height = 30
 
         self.low_prio_btn = QtWidgets.QPushButton(Priorities().low)
+        self.low_prio_btn.setMinimumHeight(button_minimum_height)
 
         self.normal_prio_btn = QtWidgets.QPushButton(Priorities().normal)
+        self.normal_prio_btn.setMinimumHeight(button_minimum_height)
+
         self.med_prio_btn = QtWidgets.QPushButton(Priorities().medium)
+        self.med_prio_btn.setMinimumHeight(button_minimum_height)
+
         self.high_prio_btn = QtWidgets.QPushButton(Priorities().high)
+        self.high_prio_btn.setMinimumHeight(button_minimum_height)
+
         self.critical_prio_btn = QtWidgets.QPushButton(Priorities().critical)
+        self.critical_prio_btn.setMinimumHeight(button_minimum_height)
 
         self.set_parent_btn = QtWidgets.QPushButton("Set Parent...")
+        self.set_parent_btn.setMinimumHeight(button_minimum_height)
 
         self.create_task_btn = QtWidgets.QPushButton("Create")
         self.create_task_btn.setMinimumHeight(30)
@@ -48,11 +55,6 @@ class InputTaskBuild(QtWidgets.QWidget):
     def create_layout(self):
         calendar_layout = QtWidgets.QFormLayout()
         calendar_layout.addRow("End Date", self.end_date)
-
-        execution_buttons_layout = QtWidgets.QHBoxLayout()
-        execution_buttons_layout.addWidget(self.thirty_min_btn)
-        execution_buttons_layout.addWidget(self.sixty_min_btn)
-        execution_buttons_layout.addWidget(self.ninety_min_btn)
 
         prio_buttons_layout = QtWidgets.QGridLayout()
         prio_buttons_layout.addWidget(self.normal_prio_btn, 0, 0)
@@ -64,8 +66,6 @@ class InputTaskBuild(QtWidgets.QWidget):
 
         buttons_layout = QtWidgets.QVBoxLayout()
         buttons_layout.addLayout(calendar_layout)
-        buttons_layout.addLayout(execution_buttons_layout)
-        buttons_layout.addStretch(1)
         buttons_layout.addLayout(prio_buttons_layout)
 
         task_input_layout = QtWidgets.QHBoxLayout()
@@ -89,9 +89,6 @@ class InputTaskBuildCore(InputTaskBuild):
 
     def create_connections(self):
         self.create_task_btn.clicked.connect(self.create_task_document)
-        self.thirty_min_btn.clicked.connect(self.set_time_thirty)
-        self.sixty_min_btn.clicked.connect(self.set_time_sixty)
-        self.ninety_min_btn.clicked.connect(self.set_time_ninety)
 
         self.low_prio_btn.clicked.connect(self.set_to_low_prio)
         self.med_prio_btn.clicked.connect(self.set_to_med_prio)
