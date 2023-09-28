@@ -20,5 +20,5 @@ def main():
 
 
 if __name__ == "__main__":
-    os.environ["LASY_DATA_ROOT"] = 'C:\\Users\\arsithra\\PycharmProjects\\LasyMe'
+    os.environ["LASY_DATA_ROOT"] = 'D:\\SynologyDrive\\LASY_DATABASE'
     main()

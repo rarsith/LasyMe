@@ -7,6 +7,7 @@ from lasy_ops.tiny_ops.tasks_ops import TinyOps
 from lasy_ui.custom_widgets.task_tags_widget import TasksViewerTagAssignerCore #TaskTagsWDG
 from lasy_ui.custom_widgets.custom_fonts_widget import define_font
 from lasy_ui.custom_widgets.separator_widget import SeparatorWDG
+from lasy_ui.custom_widgets.tasks_snooze_widget import TasksSnoozeWDG
 
 
 class TaskPropertiesEditorBuild(QtWidgets.QWidget):
@@ -45,6 +46,7 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
         self.end_date_interval_dte.setCalendarPopup(True)
 
         self.set_tags_wdg = TasksViewerTagAssignerCore()
+        self.snooze_it_wdg = TasksSnoozeWDG()
 
         self.update_task_properties_btn = QtWidgets.QPushButton("Update Task Properties")
         self.update_task_properties_btn.setMinimumHeight(40)
@@ -61,6 +63,7 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
         separator02 = SeparatorWDG()
 
         win_layout = QtWidgets.QVBoxLayout()
+        win_layout.addWidget(self.snooze_it_wdg)
         win_layout.addWidget(self.record_current_sel_task)
         win_layout.addWidget(self.text_viewer_ptx)
         win_layout.addWidget(self.update_task_text_btn)
@@ -98,8 +101,6 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
         main_layout.addWidget(separator02)
         main_layout.addWidget(self.set_tags_wdg)
 
-
-
 class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
     def __init__(self, parent=None):
         super(TaskPropertiesEditorCore, self).__init__(parent)
@@ -113,7 +114,47 @@ class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
     def create_connections(self):
         self.update_task_text_btn.clicked.connect(self.update_task_briefing_text)
         self.update_task_properties_btn.clicked.connect(self.update_task_properties)
+        self.snooze_it_wdg.snooze_one_bth.clicked.connect(self.snooze_task_one)
+        self.snooze_it_wdg.snooze_three_bth.clicked.connect(self.snooze_task_three)
+        self.snooze_it_wdg.snooze_five_bth.clicked.connect(self.snooze_task_five)
+        self.snooze_it_wdg.commmit_btn.clicked.connect(self.add_custom_snooze)
 
+    def add_custom_snooze(self):
+        get_current_id = self.record_current_sel_task.text()
+        get_end_date_raw = self.end_date_interval_dte.date()
+        get_custom_value = self.snooze_it_wdg.custom_snooze_spb.value()
+        snoozed_date = get_end_date_raw.addDays(get_custom_value)
+        get_end_date = snoozed_date.toString("yyyy-MM-dd")
+        self.tops.update_task(int(get_current_id), self.task_attr_paths.end_interval(get_end_date))
+        active_document = self.tops.get_doc_by_id(int(get_current_id))
+        self.populate_all_widgets({"task_id_emit": get_current_id, "task_emit": active_document})
+
+    def snooze_task_one(self):
+        get_current_id = self.record_current_sel_task.text()
+        get_end_date_raw = self.end_date_interval_dte.date()
+        snoozed_date = get_end_date_raw.addDays(1)
+        get_end_date = snoozed_date.toString("yyyy-MM-dd")
+        self.tops.update_task(int(get_current_id), self.task_attr_paths.end_interval(get_end_date))
+        active_document = self.tops.get_doc_by_id(int(get_current_id))
+        self.populate_all_widgets({"task_id_emit":get_current_id,"task_emit":active_document})
+
+    def snooze_task_three(self):
+        get_current_id = self.record_current_sel_task.text()
+        get_end_date_raw = self.end_date_interval_dte.date()
+        snoozed_date = get_end_date_raw.addDays(3)
+        get_end_date = snoozed_date.toString("yyyy-MM-dd")
+        self.tops.update_task(int(get_current_id), self.task_attr_paths.end_interval(get_end_date))
+        active_document = self.tops.get_doc_by_id(int(get_current_id))
+        self.populate_all_widgets({"task_id_emit": get_current_id, "task_emit": active_document})
+
+    def snooze_task_five(self):
+        get_current_id = self.record_current_sel_task.text()
+        get_end_date_raw = self.end_date_interval_dte.date()
+        snoozed_date = get_end_date_raw.addDays(5)
+        get_end_date = snoozed_date.toString("yyyy-MM-dd")
+        self.tops.update_task(int(get_current_id), self.task_attr_paths.end_interval(get_end_date))
+        active_document = self.tops.get_doc_by_id(int(get_current_id))
+        self.populate_all_widgets({"task_id_emit": get_current_id, "task_emit": active_document})
 
     def update_dates(self):
         get_current_id = self.record_current_sel_task.text()
