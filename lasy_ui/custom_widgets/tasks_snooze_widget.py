@@ -1,6 +1,7 @@
 from PySide2 import QtWidgets, QtCore
 
 class TasksSnoozeWDG(QtWidgets.QWidget):
+    buttons_pressed_signal = QtCore.Signal(str)
     def __init__(self, parent=None):
         super(TasksSnoozeWDG, self).__init__(parent)
 
@@ -40,15 +41,14 @@ class TasksSnoozeWDG(QtWidgets.QWidget):
         main_layout.addLayout(customs_snooze_layout)
 
     def create_connections(self):
-        pass
+        self.snooze_one_bth.clicked.connect(self.send_signal)
+        self.snooze_three_bth.clicked.connect(self.send_signal)
+        self.snooze_five_bth.clicked.connect(self.send_signal)
+        self.commmit_btn.clicked.connect(self.send_signal)
 
-
-
-
-
-
-
-
+    def send_signal(self):
+        to_emit = "Emitting Refresh"
+        self.buttons_pressed_signal.emit(to_emit)
 
 
 if __name__ == "__main__":

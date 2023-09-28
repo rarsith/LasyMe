@@ -16,7 +16,8 @@ with open("start_lasy.bat", "w") as bat_file:
 
 executables = [
     Executable(
-        script="main.py"
+        script="main.py",
+        icon="icons8-to-do-100.ico"
     )
 ]
 
@@ -26,8 +27,6 @@ buildOptions = dict(include_files=[
     ("start_lasy.bat", "start_lasy.bat")
 ]
 )
-
-
 
 
 with open("requirements.txt", "r") as req:

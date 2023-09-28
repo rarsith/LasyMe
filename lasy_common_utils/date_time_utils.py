@@ -28,6 +28,13 @@ class DateTime(object):
         now = datetime.now()
         return now.strftime(self.date_format)
 
+    def has_weekend(self,  start_day, end_day, weekend=False) -> list:  # Takes raw date as start_day and end_date
+        date_range = [start_day + timedelta(days=i) for i in range((end_day - start_day).days + 1)]
+        weekdays = [date for date in date_range if date.weekday() < 5]
+        if not weekend:
+            return date_range
+        return weekdays
+
     def today_to_end_day(self, end_day: str):
         now = datetime.now()
         today = now.date()
@@ -36,12 +43,23 @@ class DateTime(object):
 
         return days_left.days
 
-    def start_to_end_day(self, start_day: str, end_day: str):
+    def start_to_end_day(self, start_day: str, end_day: str, exclude_weekend=False):
+
         start = datetime.strptime(start_day, self.date_format).date()
         end = datetime.strptime(end_day, self.date_format).date()
-        interval_interval = end - start
 
-        return interval_interval.days
+        days_full_range = self.has_weekend(start, end, weekend=exclude_weekend)
+
+        if not exclude_weekend:
+            interval_interval = end - start
+            return interval_interval.days
+
+        date_range = [start + timedelta(days=i) for i in range((end - start).days + 1)]
+        weekdays = [date for date in date_range if date.weekday() < 5]
+
+        days_excluding_weekends = len(weekdays)
+        return days_excluding_weekends
+
 
     def get_time_elapsed(self, start_day: str, end_day: str, percentage=False, to_hours=False):
         now = datetime.now()
@@ -74,13 +92,16 @@ if __name__ == "__main__":
     print ("left_days", left_days)
 
     full_interval = date_time.start_to_end_day(start_date_str, end_date_str)
+    full_interval_no_weekends = date_time.start_to_end_day(start_date_str, end_date_str, exclude_weekend=True)
     time_elapsed = date_time.get_time_elapsed(start_date_str, end_date_str)
 
     time_elapsed_percentage = date_time.get_time_elapsed(start_date_str, end_date_str, percentage=True)
 
+
     print("Days Left: ", left_days)
     print("Full Time Interval: ", full_interval)
     print("Time Elapsed: ", time_elapsed)
+    print("Time Elapsed Workdays Only: ", full_interval_no_weekends)
     print("Time Elapsed Percentage: ", time_elapsed_percentage)
 
     #

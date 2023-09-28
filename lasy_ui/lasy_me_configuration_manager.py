@@ -212,7 +212,7 @@ class LasyMeConfigurationManager(QtWidgets.QDialog):
         schema_attr_names = ConfigSchemaAttrNames()
         schema = ConfigSchema(schema_attr_names)
 
-        schema.root_path = patils.to_user_home_dir()
+        # schema.root_path = patils.to_user_home_dir()
         schema.start_day = "10:00"
         schema.end_day = "19:00"
         schema.update_timer_interval = "60"

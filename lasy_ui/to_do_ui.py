@@ -90,6 +90,19 @@ class ToDoMeMainCore(QtWidgets.QWidget):
         self.task_properties_tabs_wdg.task_properties_wdg.set_tags_wdg.assign_tag_button_info. \
             connect(self.task_properties_tabs_wdg.task_properties_wdg.update_per_click_tags)
 
+        self.task_properties_tabs_wdg.task_properties_wdg.snooze_it_wdg.snooze_one_bth.clicked. \
+            connect(lambda: self.tasks_viewer_wdg.refresh_all())
+
+        self.task_properties_tabs_wdg.task_properties_wdg.snooze_it_wdg.snooze_three_bth.clicked. \
+            connect(lambda: self.tasks_viewer_wdg.refresh_all())
+
+        self.task_properties_tabs_wdg.task_properties_wdg.snooze_it_wdg.snooze_five_bth.clicked. \
+            connect(lambda: self.tasks_viewer_wdg.refresh_all())
+
+        self.task_properties_tabs_wdg.task_properties_wdg.snooze_it_wdg.commmit_btn.clicked. \
+            connect(lambda: self.tasks_viewer_wdg.refresh_all())
+
+
         self.task_properties_tabs_wdg.task_tag_manager_wdg.create_tag_btn.clicked. \
             connect(self.task_properties_tabs_wdg.task_properties_wdg.set_tags_wdg.update_tags)
 

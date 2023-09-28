@@ -129,6 +129,16 @@ class TaskEntityWDG(QtWidgets.QWidget):
 
     def get_task_status(self):
         get_status = self.tops.get_task_status(task_id=self.task_id)
+        if get_status == Statuses().done:
+            self.status_cb.setStyleSheet("background-color: #008000; color: black;")
+            self.task_title_lb.setStyleSheet("background-color: #008000; color: black;")
+            self.prio_cb.setStyleSheet("background-color: #008000; color: black;")
+            self.prog_bar.progress_bar.setStyleSheet("""QProgressBar {border: 1px solid rgba(33, 37, 43, 180);
+                        border-radius: 5px;
+                        text-align: center;
+                        background-color: rgba(33, 37, 43, 180);
+                        color: black;}
+                        QProgressBar::chunk {background-color: #008000;}""")
         self.status_cb.setCurrentText(get_status)
 
     def get_task_prio(self):

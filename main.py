@@ -18,7 +18,6 @@ def main():
 
     sys.exit(app.exec_())
 
-
 if __name__ == "__main__":
     os.environ["LASY_DATA_ROOT"] = 'D:\\SynologyDrive\\LASY_DATABASE'
     main()
