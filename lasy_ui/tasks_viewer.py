@@ -80,8 +80,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         self.statuses = []
         self.tags = []
 
-        # self.cache_database()
-
         self.populate_tasks()
         self.create_connections()
 
@@ -90,7 +88,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         self.task_viewer_trw.itemPressed.connect(lambda: self.get_view_entries(6))
         self.refresh_btn.clicked.connect(self.refresh_all)
         self.filter_by_buttons_group.buttonClicked.connect(self.get_current_filter)
-        # self.show_me_tasks_of_today_btn.clicked.connect(self.get_tasks_for_today)
         self.show_me_tasks_of_today_btn.clicked.connect(self.populate_tasks)
         self.show_done_tasks_btn.clicked.connect(self.populate_tasks)
 
@@ -198,13 +195,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
 
                 self.populate_viewer(all_documents)
 
-                # for key, value in all_documents.items():
-                #     root_item = self.task_viewer_trw.invisibleRootItem()
-                #     self.add_custom_widget(root_item, task_id=key)
-                #
-                #     self.task_viewer_trw.expandAll()
-                #     self.restore_selected_buffer(get_selected)
-
         else:
             return
 
@@ -212,12 +202,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         all_documents = self.tiny_ops.get_docs_by_id(ids_list)
         if all_documents:
             self.populate_viewer(all_documents)
-            # self.task_viewer_trw.clear()
-            # for key, value in all_documents.items():
-            #     root_item = self.task_viewer_trw.invisibleRootItem()
-            #     self.add_custom_widget(root_item, task_id=key)
-            #
-            #     self.task_viewer_trw.expandAll()
 
         else:
             return
@@ -261,15 +245,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         sorted_tasks = dict(sorted(all_documents.items(), key=lambda item: order_ref.index(item[1][key_to_sort])))
         self.populate_viewer(sorted_tasks)
 
-        # self.task_viewer_trw.clear()
-        # for key, value in sorted_tasks.items():
-        #     if value["parent"] == "root":
-        #         root_item = self.task_viewer_trw.invisibleRootItem()
-        #         self.add_custom_widget(root_item, task_id=key)
-        #     self.task_viewer_trw.expandAll()
-        #
-        # self.restore_selected_buffer(get_selected)
-
     def keep_selected_buffer(self):
         selected_items = []
         for item in self.task_viewer_trw.selectedItems():
@@ -306,12 +281,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         get_current_content_ids = self.get_view_entries(6)
         all_documents = self.tiny_ops.get_docs_by_id(get_current_content_ids)
         self.populate_viewer(all_documents)
-
-        # for key, value in all_documents.items():
-        #     if value["parent"] == "root":
-        #         root_item = self.task_viewer_trw.invisibleRootItem()
-        #         self.add_custom_widget(root_item, task_id=key)
-        #     self.task_viewer_trw.expandAll()
 
     def sort_by_end_date(self):
         self.populate_tasks_custom(self.tiny_attr_definitions.end_date_interval)
@@ -360,9 +329,7 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         title_text = custom_widget_container.get_task_title()
         custom_widget_container.get_progress_bar_amount()
         custom_widget_container.get_task_title()
-        check_status = custom_widget_container.get_task_status()
-        # if check_status == Statuses().done:
-
+        custom_widget_container.get_task_status()
 
         custom_widget_container.get_task_prio()
 
@@ -403,9 +370,8 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         value_selected = sender_button.currentText()
         task_id = item.text(6)
         self.tiny_ops.update_task(int(task_id), self.tiny_attr_paths.status(value_selected))
-        # if value_selected == Statuses().done:
-        self.refresh_all()
 
+        self.refresh_all()
 
     def update_task_prio(self):
         sender_button = self.sender()

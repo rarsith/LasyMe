@@ -117,7 +117,7 @@ class LasyMeConfigurationManager(QtWidgets.QDialog):
         return separator
 
     def create_connections(self):
-        self.open_browser_btn.clicked.connect(self.open_file_dialog)
+        # self.open_browser_btn.clicked.connect(self.open_file_dialog)
         self.save_btn.clicked.connect(self.create_lasy_data)
 
         self.save_btn.clicked.connect(self.close)
@@ -134,7 +134,7 @@ class LasyMeConfigurationManager(QtWidgets.QDialog):
     def gather_options(self):
         schema_attr_names = ConfigSchemaAttrNames()
         schema = ConfigSchema(schema_attr_names)
-        schema.root_path = self.db_root_path_le.text()
+        # schema.root_path = self.db_root_path_le.text()
         schema.start_day = self.work_starts_at_le.text()
         schema.end_day = self.work_ends_at_le.text()
         schema.update_timer_interval = self.main_viewer_update_interval_le.text()
@@ -194,11 +194,11 @@ class LasyMeConfigurationManager(QtWidgets.QDialog):
 
     def load_config(self, config_file):
         schema_attr_names = ConfigSchemaAttrNames()
-        if len(config_file[schema_attr_names._db_root_path]) != 0:
-            self.db_root_path_le.setText(config_file[schema_attr_names._db_root_path])
-        else:
-            default_databses_folder = patils.to_user_home_dir(parent_directory="lasy_databses")
-            self.db_root_path_le.setText(str(default_databses_folder))
+        # if len(config_file[schema_attr_names._db_root_path]) != 0:
+        #     self.db_root_path_le.setText(config_file[schema_attr_names._db_root_path])
+        # else:
+        #     default_databses_folder = patils.to_user_home_dir(parent_directory="lasy_databses")
+        #     self.db_root_path_le.setText(str(default_databses_folder))
 
         self.work_starts_at_le.setText(config_file[schema_attr_names._start_work_day])
         self.work_ends_at_le.setText(config_file[schema_attr_names._end_work_day])

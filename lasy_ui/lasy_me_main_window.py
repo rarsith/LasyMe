@@ -35,7 +35,6 @@ class LasyMeMainWindow(QtWidgets.QMainWindow):
 
     def check_if_folders_exist(self):
         get_root = os.environ.get("LASY_DATA_ROOT")
-        print(get_root)
         LasyConnections().create_implicit_structure(get_root)
 
     def activate_main(self):
