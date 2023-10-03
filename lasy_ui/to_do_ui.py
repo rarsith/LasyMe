@@ -19,7 +19,6 @@ class ToDoMeMainCore(QtWidgets.QWidget):
         self.create_layout()
         self.create_connections()
 
-
     def create_widgets(self):
 
         self.tasks_tags_filter_viewer_wdg = TasksViewerTagFilterCore()
@@ -41,27 +40,27 @@ class ToDoMeMainCore(QtWidgets.QWidget):
         filters_layout.addWidget(self.tasks_status_filter_wdg)
         filters_layout.addStretch(1)
 
-        viewer_and_input_layout = QtWidgets.QHBoxLayout()
-        viewer_and_input_layout.addWidget(self.tasks_viewer_wdg)
-        viewer_and_input_layout.addLayout(filters_layout)
-        viewer_and_input_layout.addWidget(self.task_properties_tabs_wdg)
+        viewer_layout = QtWidgets.QHBoxLayout()
+        viewer_layout.addWidget(self.tasks_viewer_wdg)
+        viewer_layout.addLayout(filters_layout)
+        viewer_layout.addWidget(self.task_properties_tabs_wdg)
 
         tags_viewer_layout = QtWidgets.QVBoxLayout()
-        tags_viewer_layout.addLayout(viewer_and_input_layout)
+        tags_viewer_layout.addLayout(viewer_layout)
+        # tags_viewer_layout.addStretch(1)
         tags_viewer_layout.addWidget(self.task_preview_properties_wdg)
         tags_viewer_layout.addWidget(self.task_input_wdg)
 
-        tags_viewer_layout.addLayout(filters_layout)
-        tags_viewer_layout.setContentsMargins(0, 0, 0, 0)
+        # tags_viewer_layout.addLayout(filters_layout)
+        # tags_viewer_layout.setContentsMargins(0, 0, 0, 0)
 
         main_layout = QtWidgets.QHBoxLayout(self)
         main_layout.addWidget(self.tasks_tags_filter_viewer_wdg)
         main_layout.addLayout(tags_viewer_layout)
 
-
-
     def create_connections(self):
         self.task_input_wdg.create_task_btn.clicked.connect(self.tasks_viewer_wdg.refresh_all)
+        self.task_input_wdg.create_task_btn.clicked.connect(self.task_preview_properties_wdg.clear_all)
         self.task_input_wdg.task_input_ptx.textChanged.connect(self.set_preview_title)
         self.task_input_wdg.end_date.dateChanged.connect(self.set_preview_end_date)
         self.task_input_wdg.normal_prio_btn.clicked.connect(self.set_preview_normal_prio)
@@ -75,6 +74,10 @@ class ToDoMeMainCore(QtWidgets.QWidget):
 
         self.task_properties_tabs_wdg.task_properties_wdg.update_task_text_btn.clicked.connect\
             (self.tasks_viewer_wdg.populate_tasks)
+
+        self.task_properties_tabs_wdg.task_properties_wdg.create_tasks_from_selection_btn.clicked.connect \
+            (self.tasks_viewer_wdg.populate_tasks)
+
         self.task_properties_tabs_wdg.task_properties_wdg.update_task_properties_btn.clicked.\
             connect(self.tasks_viewer_wdg.populate_tasks)
 
@@ -106,14 +109,20 @@ class ToDoMeMainCore(QtWidgets.QWidget):
         self.task_properties_tabs_wdg.task_tag_manager_wdg.create_tag_btn.clicked. \
             connect(self.task_properties_tabs_wdg.task_properties_wdg.set_tags_wdg.update_tags)
 
-        self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked.\
-            connect(self.tasks_tags_filter_viewer_wdg.update_tags)
-
-        self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked.\
-            connect(self.tasks_tags_filter_viewer_wdg.update_tags)
-
         self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked. \
+            connect(self.task_properties_tabs_wdg.task_properties_wdg.set_tags_wdg.update_tags)
+
+        self.task_properties_tabs_wdg.task_tag_manager_wdg.create_tag_btn.clicked. \
+            connect(self.task_input_wdg.set_tags_wdg.update_tags)
+
+        self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked.\
+            connect(self.task_input_wdg.set_tags_wdg.update_tags)
+
+        self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked.\
             connect(self.tasks_tags_filter_viewer_wdg.update_tags)
+
+        # self.task_properties_tabs_wdg.task_tag_manager_wdg.delete_tag_btn.clicked. \
+        #     connect(self.tasks_tags_filter_viewer_wdg.update_tags)
 
     def set_preview_title(self):
         title_in = self.task_input_wdg.get_title()

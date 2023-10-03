@@ -28,6 +28,7 @@ class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
         self.setDefaultDropAction(QtCore.Qt.MoveAction)
         self.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)  # Disable selection highlighting
         self.setSelectionMode(QtWidgets.QTreeWidget.SingleSelection)
+        self.setRootIsDecorated(False)
 
         self.setFocusPolicy(QtCore.Qt.NoFocus)
 

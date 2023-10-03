@@ -1,5 +1,6 @@
 from PySide2 import QtWidgets, QtCore
 from PySide2.QtCore import Slot
+import getpass
 from lasy_ui.custom_widgets.task_text_widget import CustomPlainTextEditWDG
 from lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
 from lasy_ops.tdb_attributes_paths import TasksAttributesPaths
@@ -8,6 +9,9 @@ from lasy_ui.custom_widgets.task_tags_widget import TasksViewerTagAssignerCore #
 from lasy_ui.custom_widgets.custom_fonts_widget import define_font
 from lasy_ui.custom_widgets.separator_widget import SeparatorWDG
 from lasy_ui.custom_widgets.tasks_snooze_widget import TasksSnoozeWDG
+from lasy_ops.schemas.task_schema import TaskSchema
+from lasy_common_utils.date_time_utils import DateTime
+
 
 
 class TaskPropertiesEditorBuild(QtWidgets.QWidget):
@@ -24,11 +28,15 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
 
         self.text_viewer_ptx = CustomPlainTextEditWDG()
         self.text_viewer_ptx.setMinimumHeight(300)
-        self.text_viewer_ptx.setMaximumHeight(500)
+        # self.text_viewer_ptx.setMaximumHeight(450)
         self.text_viewer_ptx.setFont(ubuntu_font)
 
         self.update_task_text_btn = QtWidgets.QPushButton("Update Task Briefing")
         self.update_task_text_btn.setMinimumHeight(40)
+
+        self.create_tasks_from_selection_btn = QtWidgets.QPushButton("Selection To Tasks")
+        self.create_tasks_from_selection_btn.setMinimumHeight(40)
+        self.create_tasks_from_selection_btn.setMaximumWidth(100)
 
 
         self.created_by_le = QtWidgets.QLineEdit()
@@ -62,11 +70,18 @@ class TaskPropertiesEditorBuild(QtWidgets.QWidget):
         separator01 = SeparatorWDG()
         separator02 = SeparatorWDG()
 
+        buttons_layout = QtWidgets.QHBoxLayout()
+        buttons_layout.addWidget(self.update_task_text_btn)
+        buttons_layout.addWidget(self.create_tasks_from_selection_btn)
+
         win_layout = QtWidgets.QVBoxLayout()
         win_layout.addWidget(self.snooze_it_wdg)
         win_layout.addWidget(self.record_current_sel_task)
         win_layout.addWidget(self.text_viewer_ptx)
-        win_layout.addWidget(self.update_task_text_btn)
+        win_layout.addLayout(buttons_layout)
+        win_layout.setStretch(2,1)
+        # win_layout.addStretch(1)
+
 
         start_date_layout = QtWidgets.QVBoxLayout()
         start_date_layout.addWidget(self.start_lb)
@@ -113,11 +128,39 @@ class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
 
     def create_connections(self):
         self.update_task_text_btn.clicked.connect(self.update_task_briefing_text)
+        self.create_tasks_from_selection_btn.clicked.connect(self.create_tasks_from_selection)
         self.update_task_properties_btn.clicked.connect(self.update_task_properties)
         self.snooze_it_wdg.snooze_one_bth.clicked.connect(self.snooze_task_one)
         self.snooze_it_wdg.snooze_three_bth.clicked.connect(self.snooze_task_three)
         self.snooze_it_wdg.snooze_five_bth.clicked.connect(self.snooze_task_five)
         self.snooze_it_wdg.commmit_btn.clicked.connect(self.add_custom_snooze)
+
+    def create_tasks_from_selection(self):
+        task_schema = TaskSchema(self.doc_attrib)
+
+        selected_lines = self.text_viewer_ptx.get_selected_lines()
+        get_current_id = self.record_current_sel_task.text()
+        active_document = self.tops.get_doc_by_id(int(get_current_id))
+
+        task_schema.task_title = "Split --> " + active_document["task_title"]
+        task_schema.created_by_user = getpass.getuser()
+        task_schema.datetime_created_at = DateTime().date_and_time
+        task_schema.date_created_at = DateTime().curr_date
+        task_schema.time_created_at = DateTime().curr_time
+        task_schema.start_interval = active_document["start_date_interval"]
+        task_schema.end_date_interval = active_document["end_date_interval"]
+        task_schema.prio = active_document["prio"]
+        task_schema.status = active_document["status"]
+        task_schema.task_details = selected_lines  # find a way to insert more spaces from the title
+        task_schema.task_tag = active_document["tags"]
+
+        complete_doc = task_schema.to_dict()
+
+        new_task_id = self.tops.insert_task(document=complete_doc)
+
+        replacement = "Content became Task with id: {}".format(new_task_id)
+        self.text_viewer_ptx.remove_selected_text(text_as_replacement=replacement, replace=True)
+        self.update_task_briefing_text()
 
     def add_custom_snooze(self):
         get_current_id = self.record_current_sel_task.text()
@@ -175,12 +218,10 @@ class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
         get_end_date = get_end_date_raw.toString("yyyy-MM-dd")
 
         get_owner = self.created_by_le.text()
-        # get_tags = self.set_tags_wdg.get_active_buttons()
 
         self.tops.update_task(int(get_current_id), self.task_attr_paths.start_interval(get_start_date))
         self.tops.update_task(int(get_current_id), self.task_attr_paths.end_interval(get_end_date))
         self.tops.update_task(int(get_current_id), self.task_attr_paths.task_created_by(get_owner))
-        # self.tops.update_task(int(get_current_id), self.task_attr_paths.tags(get_tags))
 
     @Slot(dict)
     def update_per_click_tags(self, current_tags_selection):
@@ -241,7 +282,7 @@ if __name__ == "__main__":
     import os
     import sys
 
-    os.environ["LASY_DATA_ROOT"] = 'C:\\Users\\arsithra\\PycharmProjects\\LasyMe'
+    # os.environ["LASY_DATA_ROOT"] = 'D:\\My_Apps_Repo\\database_testing_sandbox'
 
     task_sample = {"task_title": "new Task Title",
                    "parent": "root",

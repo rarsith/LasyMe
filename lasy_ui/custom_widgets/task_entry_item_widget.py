@@ -45,7 +45,7 @@ class TaskEntityWDG(QtWidgets.QWidget):
         self.prog_bar = TaskProgressBarWDG()
 
         self.task_title_lb = QtWidgets.QLabel("-----------")
-        self.task_title_lb.setStyleSheet(f"background-color: transparent; color: black;")
+        self.task_title_lb.setStyleSheet(f"background-color: transparent; color: #b1b1b1;")
         self.task_title_lb.setFont(ubuntu_font)
         self.task_title_lb.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter) #QtCore.Qt.AlignmentFlag.AlignCenter |
 

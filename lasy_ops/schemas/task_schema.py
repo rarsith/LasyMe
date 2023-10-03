@@ -142,7 +142,7 @@ class TaskSchema:
                 self.definitions.status: self.status,
                 self.definitions.active: self.active,
                 self.definitions.task_details: self.task_details,
-                self.definitions.tags: ''
+                self.definitions.tags: self.task_tag
                 }
 
 

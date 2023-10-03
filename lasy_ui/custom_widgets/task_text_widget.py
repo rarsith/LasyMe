@@ -28,3 +28,19 @@ class CustomPlainTextEditWDG(QtWidgets.QPlainTextEdit):
         self.clear()
         self.setPlainText(text_to_import)
 
+    def get_selected_lines(self):
+        delimiter = ""
+        cursor = self.textCursor()
+        selected_text = cursor.selectedText()
+        selected_paragraph = selected_text.split('\u2029')
+
+        return selected_paragraph
+
+    def remove_selected_text(self, text_as_replacement=None, replace=False):
+        cursor = self.textCursor()
+        if cursor.hasSelection():
+            if not replace:
+                cursor.removeSelectedText()
+            else:
+                if text_as_replacement:
+                    cursor.insertText(text_as_replacement)

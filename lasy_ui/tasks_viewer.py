@@ -81,10 +81,12 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         self.tags = []
 
         self.populate_tasks()
+
         self.create_connections()
 
     def create_connections(self):
         self.task_viewer_trw.itemPressed.connect(self.retrieve_task_doc)
+        self.task_viewer_trw.itemPressed.connect(self.toggle_selected_colors)
         self.task_viewer_trw.itemPressed.connect(lambda: self.get_view_entries(6))
         self.refresh_btn.clicked.connect(self.refresh_all)
         self.filter_by_buttons_group.buttonClicked.connect(self.get_current_filter)
@@ -124,20 +126,11 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
             return
 
     def populate_tasks_custom(self, key_to_sort, descending=False):
-        get_selected = self.keep_selected_buffer()
-
         get_current_content_ids = self.get_view_entries(6)
         all_documents = self.tiny_ops.get_docs_by_id(get_current_content_ids)
         sorted_tasks = dict(sorted(all_documents.items(), key=lambda item: item[1][key_to_sort], reverse=descending))
 
-        self.task_viewer_trw.clear()
-        for key, value in sorted_tasks.items():
-            if value["parent"] == "root":
-                root_item = self.task_viewer_trw.invisibleRootItem()
-                self.add_custom_widget(root_item, task_id=key)
-            self.task_viewer_trw.expandAll()
-
-        self.restore_selected_buffer(get_selected)
+        self.populate_viewer(sorted_tasks)
 
     def define_query_criteria(self):
         criteria = dict()
@@ -168,10 +161,8 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         self.task_viewer_trw.expandAll()
         self.restore_selected_buffer(get_selected)
 
-
     def populate_by_criteria(self, criteria):
         get_selected = self.keep_selected_buffer()
-
         if len(criteria) != 0:
             all_documents = self.tiny_ops.get_docs_by_multiple_keys(criteria=criteria)
         else:
@@ -179,11 +170,13 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
 
         if all_documents:
             self.task_viewer_trw.clear()
-
             is_button_checked = self.show_me_tasks_of_today_btn.isChecked()
             if is_button_checked:
-                extracted_tasks_for_today = self.tiny_ops.get_tasks_by_remaining_time(tasks_ids=all_documents.keys(),
-                                                                                      reference_max=3)
+
+                extracted_tasks_for_today = self.tiny_ops.get_tasks_by_remaining_time(
+                    tasks_ids=all_documents.keys(),
+                    reference_max=3)
+
                 self.populate_by_ids_list(extracted_tasks_for_today)
                 self.restore_selected_buffer(get_selected)
 
@@ -194,7 +187,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
                     all_documents = self.tiny_ops.get_all_documents(ids=True)
 
                 self.populate_viewer(all_documents)
-
         else:
             return
 
@@ -254,27 +246,31 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
 
     def restore_selected_buffer(self, selected_items):
         for row_index in range(self.task_viewer_trw.topLevelItemCount()):
-
             item = self.task_viewer_trw.topLevelItem(row_index)
-
             if item:
                 column_index = 6
                 cell_value = item.text(column_index)
-
                 if len(selected_items) != 0:
                     if cell_value == selected_items[0]:
-
                         item.setSelected(True)
                         break
+        self.toggle_selected_colors()
+
+    def toggle_selected_colors(self):
+        for row_index in range(self.task_viewer_trw.topLevelItemCount()):
+            item = self.task_viewer_trw.topLevelItem(row_index)
+            title_item = self.task_viewer_trw.itemWidget(item, 1)
+            if item.isSelected():
+                title_item.setStyleSheet("background-color: transparent; color: black")
+            elif not item.isSelected():
+                title_item.setStyleSheet("background-color: transparent; color: #b1b1b1")
 
     def populate_tasks(self):
         get_selected = self.keep_selected_buffer()
-
         criteria_def = self.define_query_criteria()
+
         self.populate_by_criteria(criteria_def)
-
         self.get_current_filter()
-
         self.restore_selected_buffer(get_selected)
 
     def clear_duplicates(self):
@@ -398,6 +394,9 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
 
 if __name__=="__main__":
     import sys
+    import os
+
+    # os.environ["LASY_DATA_ROOT"] = 'D:\\My_Apps_Repo\\database_testing_sandbox'
 
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = ExistingTasksViewerCore()

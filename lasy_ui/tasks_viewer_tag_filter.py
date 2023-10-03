@@ -26,17 +26,16 @@ class TasksViewerTagFilterCore(QtWidgets.QWidget):
         self.create_connections()
         self.update_tags()
 
-
     def create_widgets(self):
         self.refresh_btn = QtWidgets.QPushButton("Refresh Tags List")
         self.refresh_btn.setMaximumWidth(100)
+
     def create_layout(self):
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.main_layout.addWidget(self.refresh_btn)
         self.main_layout.setContentsMargins(0,0,0,0)
 
     def create_connections(self):
-
         self.refresh_btn.clicked.connect(self.update_tags)
 
     def update_tags(self):
@@ -49,6 +48,7 @@ class TasksViewerTagFilterCore(QtWidgets.QWidget):
         if get_all_tags:
             for tag_id, docs in get_all_tags.items():
                 tag_name = docs[self.tag_key_definitions.name]
+
                 self.button = TagFilterButtonWDG(name=tag_name)
                 self.button.clicked.connect(self.transmit_name)
                 self.button.setCheckable(True)
@@ -82,12 +82,12 @@ if __name__ == "__main__":
     import os
     import sys
 
-    os.environ["LASY_DATA_ROOT"] = 'C:\\Users\\arsithra\\PycharmProjects\\LasyMe'
+    # os.environ["LASY_DATA_ROOT"] = 'D:\\My_Apps_Repo\\database_testing_sandbox'
 
     button_n = ['project_', 'LasyMe_TODOs']
 
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = TasksViewerTagFilterCore()
-    test_dialog.activate_buttons(button_n)
+    # test_dialog.activate_buttons(button_n)
     test_dialog.show()
     sys.exit(app.exec_())

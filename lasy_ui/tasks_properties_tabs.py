@@ -1,10 +1,7 @@
 from PySide2 import QtWidgets
 
 from lasy_ui.tasks_properties_editor import TaskPropertiesEditorCore
-from lasy_ui.tasks_statistics_viewer import TaskStatisticsBuild
 from lasy_ui.tasks_tags_manager import TaskTagManagerCore
-
-html_path = '/\\lasy_scratch\\interactive_gantt_chart.html'
 
 
 class TaskPropertiesTabsBuild(QtWidgets.QTabWidget):
@@ -15,11 +12,9 @@ class TaskPropertiesTabsBuild(QtWidgets.QTabWidget):
 
         self.task_properties_wdg = TaskPropertiesEditorCore()
         self.task_tag_manager_wdg = TaskTagManagerCore()
-        self.task_statistics_wdg = TaskStatisticsBuild(html_path)
 
         self.addTab(self.task_properties_wdg, "Properties")
         self.addTab(self.task_tag_manager_wdg, "Tags")
-        # self.addTab(self.task_statistics_wdg, "Statistics")
         self.setTabPosition(QtWidgets.QTabWidget.North)
 
         self.setMaximumWidth(400)
@@ -27,6 +22,9 @@ class TaskPropertiesTabsBuild(QtWidgets.QTabWidget):
 
 if __name__ == "__main__":
     import sys
+    import os
+
+    # os.environ["LASY_DATA_ROOT"] = 'D:\\My_Apps_Repo\\database_testing_sandbox'
 
     app = QtWidgets.QApplication(sys.argv)
     test_dialog = TaskPropertiesTabsBuild()

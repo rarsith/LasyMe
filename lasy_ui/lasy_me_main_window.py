@@ -11,7 +11,6 @@ class LasyMeMainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super(LasyMeMainWindow, self).__init__(parent)
 
-        self.setGeometry(700, 400, 1200, 700)
         self.setWindowTitle(self.WINDOW_TITLE)
 
         self.create_widgets()

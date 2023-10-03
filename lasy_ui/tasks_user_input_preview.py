@@ -77,7 +77,12 @@ class TaskPreviewPropertiesCore(TaskPreviewPropertiesBuild):
         self.end_lb.clear()
         self.end_lb.setText("{}".format(value))
 
-
+    def clear_all(self):
+        self.task_title_le.clear()
+        self.priority_lb.clear()
+        self.duration_lb.clear()
+        self.start_lb.clear()
+        self.end_lb.clear()
 
 
 if __name__ == "__main__":

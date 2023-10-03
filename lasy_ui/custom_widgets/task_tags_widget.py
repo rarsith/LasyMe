@@ -1,9 +1,7 @@
 from PySide2 import QtWidgets, QtCore
-
+from lasy_ops.schemas.tags_schema import TagsSchema
 from lasy_ops.tdb_attributes_definitions import TagsAttributesDefinitions
-from lasy_ops.tdb_attributes_paths import TagsAttributesPaths
 from lasy_ops.tiny_ops.tags_ops import TagsOps
-from lasy_ops.tiny_ops.tasks_ops import TinyOps
 
 
 class TagFilterButtonWDG(QtWidgets.QPushButton):
@@ -44,9 +42,10 @@ class TasksViewerTagAssignerCore(QtWidgets.QWidget):
 
     def update_tags(self):
         self.tag_key_definitions = TagsAttributesDefinitions()
+        self.tag_schema = TagsSchema(self.tag_key_definitions)
         self.taops = TagsOps()
 
-        store_active = self.get_active_buttons()
+        # store_active = self.get_active_buttons()
 
         self.clear_layout()
         get_all_tags = self.taops.get_all_documents(ids=True)
@@ -57,6 +56,7 @@ class TasksViewerTagAssignerCore(QtWidgets.QWidget):
                 buttons_names.append(tag_name)
 
             for i, button_name in enumerate(buttons_names):
+
                 self.button = TagFilterButtonWDG(name=button_name)
                 self.button.clicked.connect(self.transmit_name)
                 self.button.setCheckable(True)
@@ -67,12 +67,11 @@ class TasksViewerTagAssignerCore(QtWidgets.QWidget):
         self.main_layout.addWidget(self.refresh_btn)
         self.setLayout(self.main_layout)
 
-        self.activate_tags(store_active)
-
+        # self.activate_tags(store_active)
 
     def clear_layout(self):
-        while self.main_layout.count():
-            item = self.main_layout.takeAt(0)
+        while self.buttons_layout.count():
+            item = self.buttons_layout.takeAt(0)
             widget = item.widget()
             if widget and widget != self.refresh_btn:
                 widget.deleteLater()
@@ -112,11 +111,14 @@ class TasksViewerTagAssignerCore(QtWidgets.QWidget):
 
 if __name__ == "__main__":
     import sys
+    import os
+
+    # os.environ["LASY_DATA_ROOT"] = 'D:\\My_Apps_Repo\\database_testing_sandbox'
 
     app = QtWidgets.QApplication(sys.argv)
-    test_dialog = TaskTagsWDG()
-    xx = test_dialog.get_db_tags()
-    print(xx)
+    test_dialog = TasksViewerTagAssignerCore()
+    # xx = test_dialog.get_db_tags()
+    # print(xx)
 
     test_dialog.show()
     sys.exit(app.exec_())
