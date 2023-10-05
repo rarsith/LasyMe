@@ -4,7 +4,7 @@ from lasy_ops.connection import LasyConnections
 from lasy_common_utils.date_time_utils import DateTime
 
 
-class TinyOps:
+class TasksOps:
     def __init__(self):
         self.db = TinyDB(LasyConnections().tasks_db_full_path())
         self.table = self.db.table(LasyConnections().tasks_db_name())
@@ -32,7 +32,6 @@ class TinyOps:
 
     def get_doc_by_id(self, task_id):
         result = self.table.get(doc_id=task_id)
-
         return result
 
     def get_docs_by_id(self, list_of_ids):
@@ -87,7 +86,7 @@ class TinyOps:
 
             for document in result:
                 full_docs[document.doc_id] = document
-
+        print(condition)
         return full_docs
 
     def get_tasks_by_remaining_time(self, tasks_ids: list ,reference_max):
@@ -101,8 +100,6 @@ class TinyOps:
         return extracted_ids
 
         # all_documents = self.get_all_documents(ids=True)
-
-
 
     def get_task_parent(self, task_id):
         result = self.get_doc_by_id(task_id=task_id)
@@ -164,8 +161,11 @@ class TinyOps:
 
 if __name__ == "__main__":
     import pprint
+    import os
 
-    tops = TinyOps()
+    # os.environ["LASY_DATA_ROOT"] = 'D:\\My_Apps_Repo\\database_testing_sandbox'
+
+    tops = TasksOps()
     # print(tops)
     # attr_def = TaskAttributesDefinitions()
     # tiny_attr = TinyAttributesPaths(attr_def)
@@ -185,12 +185,13 @@ if __name__ == "__main__":
 
     big_ass_doc = {"1": {"task_title": "Daily Norm module", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:47", "assigned_to": "arsithra", "start_date_interval": "2023-09-17", "end_date_interval": "2023-09-23", "hours_allocated": "90", "prio": "Critical", "status": "BLOCKED", "active": True, "task_details": ["", "Need to create the Daily module for the app to allocate portions per day"], "tags": ["LASY_ME"]}, "2": {"task_title": "Create Progress bar to illustrate the norm foe rall tasks per day", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:47", "assigned_to": "arsithra", "start_date_interval": "2023-09-17", "end_date_interval": "2023-09-23", "hours_allocated": "90", "prio": "Critical", "status": "BLOCKED", "active": True, "task_details": [], "tags": ["LASY_ME"]}, "3": {"task_title": "Create App installer", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:47", "assigned_to": "arsithra", "start_date_interval": "2023-09-17", "end_date_interval": "2023-09-30", "hours_allocated": "90", "prio": "High", "status": "BLOCKED", "active": True, "task_details": [], "tags": ["LASY_ME"]}, "4": {"task_title": "Create App COnfiguration Manager", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:47", "assigned_to": "arsithra", "start_date_interval": "2023-09-17", "end_date_interval": "2023-09-30", "hours_allocated": "90", "prio": "Low", "status": "BLOCKED", "active": True, "task_details": [], "tags": ["LASY_ME"]}, "5": {"task_title": "Create DB backup Manager", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:47", "assigned_to": "arsithra", "start_date_interval": "2023-09-17", "end_date_interval": "2023-09-30", "hours_allocated": "90", "prio": "Normal", "status": "BLOCKED", "active": True, "task_details": [], "tags": ["LASY_ME"]}, "6": {"task_title": "Send Mikkel Jobs Descri[tion to philipp", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:47", "assigned_to": "arsithra", "start_date_interval": "2023-09-15", "end_date_interval": "2023-09-19", "hours_allocated": "30", "prio": "Critical", "status": "DONE", "active": True, "task_details": [], "tags": ["department"]}, "7": {"task_title": "Get the car to the service", "parent": "root", "created_by": "arsithra", "date_created": "2023-09-17", "time_created": "18:55", "assigned_to": "arsithra", "start_date_interval": "2023-09-17", "end_date_interval": "2023-09-21", "hours_allocated": "90", "prio": "Normal", "status": "Init", "active": True, "task_details": [], "tags": ["personal"]}}
 
-    key_to = {'tags':['LASY_ME'], 'status': ['Init'], 'prio':['Normal']}
+    key_to = {'tags':['Sales'], 'status': ['DONE'], 'prio':['High']}
 
-    ids_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+    # ids_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+    ids_list = [1, 2]
 
     # cc = tops.get_docs_by_multiple_keys(criteria=key_to)
-    cc = tops.get_all_documents(ids=True)
+    cc = tops.get_docs_by_id(ids_list)
 
     # all_docum = tops.get_docs_by_tags(tag, remove=True)
     pprint.pprint(cc)

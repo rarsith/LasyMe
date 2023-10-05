@@ -1,6 +1,6 @@
 from PySide2 import QtWidgets, QtCore
 from lasy_ops.tiny_ops.tags_ops import TagsOps
-from lasy_ops.tiny_ops.tasks_ops import TinyOps
+from lasy_ops.tiny_ops.tasks_ops import TasksOps
 from lasy_ops.schemas.tags_schema import TagsSchema
 from lasy_ops.tdb_attributes_definitions import TagsAttributesDefinitions
 
@@ -46,7 +46,7 @@ class TaskTagManagerCore(TaskTagManagerBuild):
         self.tag_key_definitions = TagsAttributesDefinitions()
         self.tag_schema = TagsSchema(self.tag_key_definitions)
         self.taops = TagsOps()
-        self.tops = TinyOps()
+        self.tops = TasksOps()
 
         self.populate_tag_view()
         self.create_connections()

@@ -4,7 +4,7 @@ import getpass
 from lasy_ui.custom_widgets.task_text_widget import CustomPlainTextEditWDG
 from lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
 from lasy_ops.tdb_attributes_paths import TasksAttributesPaths
-from lasy_ops.tiny_ops.tasks_ops import TinyOps
+from lasy_ops.tiny_ops.tasks_ops import TasksOps
 from lasy_ui.custom_widgets.task_tags_widget import TasksViewerTagAssignerCore #TaskTagsWDG
 from lasy_ui.custom_widgets.custom_fonts_widget import define_font
 from lasy_ui.custom_widgets.separator_widget import SeparatorWDG
@@ -121,7 +121,7 @@ class TaskPropertiesEditorCore(TaskPropertiesEditorBuild):
         super(TaskPropertiesEditorCore, self).__init__(parent)
 
         self.doc_attrib = TaskAttributesDefinitions()
-        self.tops = TinyOps()
+        self.tops = TasksOps()
         self.task_attr_paths = TasksAttributesPaths(self.doc_attrib)
 
         self.create_connections()

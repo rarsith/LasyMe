@@ -1,8 +1,9 @@
 from PySide2 import QtWidgets, QtCore
 from lasy_common_utils.date_time_utils import DateTime
+from lasy_ops.tiny_ops.tasks_caching_ops import TasksCachingOps
 from lasy_ops.tdb_priorities import Priorities
 from lasy_ops.tdb_statuses import Statuses
-from lasy_ops.tiny_ops.tasks_ops import TinyOps
+from lasy_ops.tiny_ops.tasks_ops import TasksOps
 from lasy_ui.custom_widgets.custom_fonts_widget import define_font
 
 
@@ -33,11 +34,15 @@ class TaskProgressBarWDG(QtWidgets.QWidget):
         main_layout.setContentsMargins(0, 2, 0, 2)
 
 class TaskEntityWDG(QtWidgets.QWidget):
-    def __init__(self, task_id, parent=None):
+    def __init__(self, db_document: dict, task_id, parent=None):
         super(TaskEntityWDG, self).__init__(parent)
 
         self.task_id = task_id
-        self.tops = TinyOps()
+        self.tops = TasksOps()
+
+        self.db_document = db_document
+        self.tiny_ops_cache = TasksCachingOps(self.db_document)
+
         self.create_widgets()
 
     def create_widgets(self):
@@ -70,8 +75,8 @@ class TaskEntityWDG(QtWidgets.QWidget):
         self.delete_btn.setMaximumWidth(20)
 
     def get_progress_bar_amount(self):
-        start_date = self.tops.get_task_start_date(self.task_id)
-        end_date = self.tops.get_task_end_date(self.task_id)
+        start_date = self.tiny_ops_cache.get_task_start_date(self.task_id)
+        end_date = self.tiny_ops_cache.get_task_end_date(self.task_id)
 
         time_left_interval = DateTime().today_to_end_day(end_day=end_date)
         percentage_interval = DateTime().get_time_elapsed(start_day=start_date, end_day=end_date, percentage=True)
@@ -128,7 +133,7 @@ class TaskEntityWDG(QtWidgets.QWidget):
         self.task_title_lb.setText(get_title)
 
     def get_task_status(self):
-        get_status = self.tops.get_task_status(task_id=self.task_id)
+        get_status = self.tiny_ops_cache.get_task_status(task_id=self.task_id)
         if get_status == Statuses().done:
             self.status_cb.setStyleSheet("background-color: #008000; color: black;")
             self.task_title_lb.setStyleSheet("background-color: #008000; color: black;")
@@ -142,7 +147,7 @@ class TaskEntityWDG(QtWidgets.QWidget):
         self.status_cb.setCurrentText(get_status)
 
     def get_task_prio(self):
-        get_prio = self.tops.get_task_prio(task_id=self.task_id)
+        get_prio = self.tiny_ops_cache.get_task_prio(task_id=self.task_id)
         self.prio_cb.setCurrentText(get_prio)
 
 
