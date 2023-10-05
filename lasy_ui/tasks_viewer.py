@@ -169,10 +169,8 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         get_selected = self.keep_selected_buffer()
         if len(criteria) != 0:
             all_documents = self.tiny_ops_cache.get_docs_by_multiple_keys(criteria=criteria)
-            print("cached database accessed - multikeys")
         else:
             all_documents = self.all_documents_cache
-            print("cached database accessed")
 
         if all_documents:
             self.task_viewer_trw.clear()
