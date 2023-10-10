@@ -103,9 +103,7 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         column_index = 7
         role = 1
         if item is not None:
-            print(item)
             get_index = self.task_viewer_trw.indexOfTopLevelItem(item)
-            print(get_index)
             custom_data = item.data(column_index, role)
             return custom_data
 
@@ -192,7 +190,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
 
         child_item.setText(6, str(task_id))
         child_item.setData(7, 1, custom_data)
-        # child_item.setText(6, str(task_id))
         return child_item
 
     def populate_tasks(self):
@@ -326,7 +323,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         selected_items = []
         for item in self.task_viewer_trw.selectedItems():
             text = item.text(6)
-            # print(text)
             selected_items.append(text)
         return selected_items
 
@@ -432,7 +428,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
             item = self.task_viewer_trw.topLevelItem(i)
             if int(item.text(6)) == int(task_id):
                 self.task_viewer_trw.takeTopLevelItem(i)
-                print(f"Item {item}, REMOVED")
                 break
 
     # This is still to be built (Drag and Drop taks onto eachother to create parent-child)
