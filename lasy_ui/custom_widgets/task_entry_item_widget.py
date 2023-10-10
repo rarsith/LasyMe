@@ -72,7 +72,7 @@ class TaskEntityWDG(QtWidgets.QWidget):
         background-color: rgba(165, 42, 42, 180);
         color: #b1b1b1;
         }""")
-        self.delete_btn.setMaximumWidth(20)
+        self.delete_btn.setMaximumWidth(40)
 
     def get_progress_bar_amount(self):
         start_date = self.tiny_ops_cache.get_task_start_date(self.task_id)
@@ -149,6 +149,14 @@ class TaskEntityWDG(QtWidgets.QWidget):
     def get_task_prio(self):
         get_prio = self.tiny_ops_cache.get_task_prio(task_id=self.task_id)
         self.prio_cb.setCurrentText(get_prio)
+
+    def get_task_start_date(self):
+        start_date = self.tiny_ops_cache.get_task_start_date(self.task_id)
+        return start_date
+
+    def get_task_end_date(self):
+        end_date = self.tiny_ops_cache.get_task_end_date(self.task_id)
+        return end_date
 
 
 class TaskEntityCore(TaskEntityWDG):

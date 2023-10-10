@@ -5,6 +5,7 @@ class Statuses:
         self.done = "DONE"
         self.blocked = "BLOCKED"
         self.followup = "FollowUp"
+        self.persistent = "PERSISTENT"
     @property
     def all_statuses(self):
-        return [self.init, self.in_progress, self.blocked, self.followup, self.done]
+        return [self.init, self.persistent, self.in_progress, self.blocked, self.followup, self.done]

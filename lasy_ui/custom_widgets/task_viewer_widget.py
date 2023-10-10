@@ -36,7 +36,7 @@ class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
         self.setMinimumWidth(self.widget_width)
         # self.setMaximumWidth(self.widget_width)
 
-        self.widget_columns_names = ["Heat", "Task Title", "Status", "Prio", "Delete", "ID"]
+        self.widget_columns_names = ["Heat", "Task Title", "Status", "Prio", "Delete", "ID", "Data"]
         self.setColumnCount(len(self.widget_columns_names))
         self.setHeaderLabels(self.widget_columns_names)
         self.setHeaderHidden(True)
@@ -54,8 +54,10 @@ class ExitingTasksViewerWDG(QtWidgets.QTreeWidget):
         self.setColumnWidth(3, round(self.widget_width*0.13))
         self.setColumnWidth(4, round(self.widget_width*0.05))
         self.setColumnWidth(5, round(self.widget_width*0.005))
+        self.setColumnWidth(6, round(self.widget_width*0.005))
 
         self.setColumnHidden(5, True)
+        self.setColumnHidden(6, True)
 
     def size_hint_for_row(self, row):
         return 40

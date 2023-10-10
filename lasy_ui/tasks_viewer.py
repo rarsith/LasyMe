@@ -82,13 +82,16 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         self.statuses = []
         self.tags = []
 
-        self.cache_database()
+        self.cache_database_full()
 
-        self.populate_tasks()
+        # self.populate_tasks()
+        self.refresh_all()
         self.create_connections()
 
     def create_connections(self):
         self.task_viewer_trw.itemPressed.connect(self.retrieve_task_doc)
+        self.task_viewer_trw.itemPressed.connect(self.retrieve_task_custom_data)
+        # self.task_viewer_trw.itemPressed.connect(self.get_selection_index)
         self.task_viewer_trw.itemPressed.connect(self.toggle_selected_colors)
         self.task_viewer_trw.itemPressed.connect(lambda: self.get_view_entries(6))
         self.refresh_btn.clicked.connect(self.refresh_all)
@@ -96,25 +99,39 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         self.show_me_tasks_of_today_btn.clicked.connect(self.populate_tasks)
         self.show_done_tasks_btn.clicked.connect(self.populate_tasks)
 
-    def cache_database(self):
+    def retrieve_task_custom_data(self, item, column):
+        column_index = 7
+        role = 1
+        if item is not None:
+            print(item)
+            get_index = self.task_viewer_trw.indexOfTopLevelItem(item)
+            print(get_index)
+            custom_data = item.data(column_index, role)
+            return custom_data
+
+#DB caching methods START
+
+    def cache_database_full(self):
         self.all_documents_cache = self.tiny_ops.get_all_documents(ids=True)
         self.tiny_ops_cache = TasksCachingOps(self.all_documents_cache)
         return self.all_documents_cache
 
-    def get_tasks_for_today(self):
-        is_button_checked = self.show_me_tasks_of_today_btn.isChecked()
-        if is_button_checked:
-            criteria_def = self.define_query_criteria()
-            self.populate_by_criteria(criteria_def)
-            get_current_content_ids = self.get_view_entries(6)
-            extracted_tasks_for_today = self.tiny_ops_cache.get_tasks_by_remaining_time(tasks_ids=get_current_content_ids,
-                                                                                 reference_max=3)
-            self.populate_by_ids_list(extracted_tasks_for_today)
+    def cache_database_one(self, task_id):
+        updated_document = self.tiny_ops.get_doc_by_id(task_id)
+        composed_doc = {task_id:updated_document}
+        self.all_documents_cache.update(composed_doc)
 
-        else:
-            criteria_def = self.define_query_criteria()
-            self.populate_by_criteria(criteria_def)
+        self.tiny_ops_cache = TasksCachingOps(self.all_documents_cache)
+        return self.all_documents_cache
 
+    @Slot(str)
+    def refresh_all(self):
+        self.cache_database_full()
+        self.populate_tasks()
+
+# DB caching methods END
+
+###
     def get_current_filter(self):
         checked_button = self.filter_by_buttons_group.checkedButton()
         if checked_button:
@@ -129,13 +146,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         else:
             return
 
-    def populate_tasks_custom(self, key_to_sort, descending=False):
-        get_current_content_ids = self.get_view_entries(6)
-        all_documents = self.tiny_ops_cache.get_docs_by_id(get_current_content_ids)
-        sorted_tasks = dict(sorted(all_documents.items(), key=lambda item: item[1][key_to_sort], reverse=descending))
-
-        self.populate_viewer(sorted_tasks)
-
     def define_query_criteria(self):
         criteria = dict()
         tags_bool = (len(self.tags) != 0)
@@ -149,21 +159,88 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
             if status_bool:
                 criteria[self.tiny_attr_definitions.status] = self.statuses
         return criteria
+###
+
+# low level item formation`- START
+
+    def add_custom_widget(self, parent_item, db_doc, task_id):
+        child_item = QtWidgets.QTreeWidgetItem(parent_item)
+
+        custom_widget_container = TaskEntityWDG(db_document=db_doc, task_id=task_id)
+        custom_widget_container.get_progress_bar_amount()
+        custom_widget_container.get_task_title()
+        custom_widget_container.get_task_status()
+        custom_widget_container.get_task_prio()
+
+        custom_widget_container.delete_btn.clicked.connect(self.delete_task)
+        custom_widget_container.prio_cb.activated.connect(self.update_task_prio)
+        custom_widget_container.status_cb.activated.connect(self.update_task_status)
+        # custom_widget_container.status_cb.activated.connect(self.select_row)
+        # custom_widget_container.status_cb.activated.connect(self.get_selection_index)
+
+        self.task_viewer_trw.setItemWidget(child_item, 0, custom_widget_container.prog_bar)
+        self.task_viewer_trw.setItemWidget(child_item, 1, custom_widget_container.task_title_lb)
+        self.task_viewer_trw.setItemWidget(child_item, 2, custom_widget_container.status_cb)
+        self.task_viewer_trw.setItemWidget(child_item, 3, custom_widget_container.prio_cb)
+        self.task_viewer_trw.setItemWidget(child_item, 4, custom_widget_container.delete_btn)
+
+        custom_data = {"task_id": task_id,
+                       "status": self.tiny_ops_cache.get_task_status(task_id),
+                       "prio": self.tiny_ops_cache.get_task_prio(task_id),
+                       "start_date": self.tiny_ops_cache.get_task_start_date(task_id),
+                       "end_date": self.tiny_ops_cache.get_task_end_date(task_id)}
+
+        child_item.setText(6, str(task_id))
+        child_item.setData(7, 1, custom_data)
+        # child_item.setText(6, str(task_id))
+        return child_item
+
+    def populate_tasks(self):
+        get_selected = self.keep_selected_buffer()
+        criteria_def = self.define_query_criteria()
+
+        self.populate_by_criteria(criteria_def)
+        self.get_current_filter()
+        self.restore_selected_buffer(get_selected)
+
+    def create_viewer_entry(self, database_documents: dict, index):
+        button_checked = self.show_done_tasks_btn.isChecked()
+        save_restored_item = []
+        for key, value in database_documents.items():
+            root_item = self.task_viewer_trw.invisibleRootItem()
+            if not button_checked:
+                if value["status"] != Statuses().done:
+                    restored_item = self.add_custom_widget(root_item, db_doc={key:value}, task_id=key)
+                    save_restored_item.append(restored_item)
+
+            else:
+                restored_item = self.add_custom_widget(root_item, db_doc={key: value}, task_id=key)
+                save_restored_item.append(restored_item)
+        self.task_viewer_trw.expandAll()
+
+        return save_restored_item
 
     def populate_viewer(self, database_documents: dict):
         button_checked = self.show_done_tasks_btn.isChecked()
         get_selected = self.keep_selected_buffer()
+
+        self.task_viewer_trw.setUpdatesEnabled(False)
+
         self.task_viewer_trw.clear()
+
         for key, value in database_documents.items():
             root_item = self.task_viewer_trw.invisibleRootItem()
             if not button_checked:
                 if value["status"] != Statuses().done:
                     self.add_custom_widget(root_item, db_doc={key:value}, task_id=key)
             else:
-                self.add_custom_widget(root_item, db_doc={key:value}, task_id=key)
+                self.add_custom_widget(root_item, db_doc={key: value}, task_id=key)
 
+        self.task_viewer_trw.setUpdatesEnabled(True)
         self.task_viewer_trw.expandAll()
         self.restore_selected_buffer(get_selected)
+
+    # low level item formation`- END
 
     def populate_by_criteria(self, criteria):
         get_selected = self.keep_selected_buffer()
@@ -176,7 +253,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
             self.task_viewer_trw.clear()
             is_button_checked = self.show_me_tasks_of_today_btn.isChecked()
             if is_button_checked:
-
                 extracted_tasks_for_today = self.tiny_ops_cache.get_tasks_by_remaining_time(
                     tasks_ids=all_documents.keys(),
                     reference_max=3)
@@ -189,16 +265,22 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
                     all_documents = self.tiny_ops_cache.get_docs_by_multiple_keys(criteria=criteria)
                 else:
                     all_documents = self.all_documents_cache
-
                 self.populate_viewer(all_documents)
+                self.restore_selected_buffer(get_selected)
         else:
             return
+
+    def populate_tasks_custom(self, key_to_sort, descending=False):
+        get_current_content_ids = self.get_view_entries(6)
+        all_documents = self.tiny_ops_cache.get_docs_by_id(get_current_content_ids)
+        sorted_tasks = dict(sorted(all_documents.items(), key=lambda item: item[1][key_to_sort], reverse=descending))
+
+        self.populate_viewer(sorted_tasks)
 
     def populate_by_ids_list(self, ids_list):
         all_documents = self.tiny_ops_cache.get_docs_by_id(ids_list)
         if all_documents:
             self.populate_viewer(all_documents)
-
         else:
             return
 
@@ -229,22 +311,22 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
 
         return self.tags
 
-    def get_all_documents_in_viewer(self):
-        self.all_documents = self.tiny_ops_cache.get_docs_by_id(self.all_items_in_viewer)
-        return self.all_documents
-
     def populate_tasks_to_list(self, key_to_sort, order_ref=[]):
         # get_selected = self.keep_selected_buffer()
-
         get_current_content_ids = self.get_view_entries(6)
         all_documents = self.tiny_ops_cache.get_docs_by_id(get_current_content_ids)
         sorted_tasks = dict(sorted(all_documents.items(), key=lambda item: order_ref.index(item[1][key_to_sort])))
         self.populate_viewer(sorted_tasks)
 
+    def get_all_documents_in_viewer(self):
+        self.all_documents = self.tiny_ops_cache.get_docs_by_id(self.all_items_in_viewer)
+        return self.all_documents
+
     def keep_selected_buffer(self):
         selected_items = []
         for item in self.task_viewer_trw.selectedItems():
             text = item.text(6)
+            # print(text)
             selected_items.append(text)
         return selected_items
 
@@ -269,20 +351,6 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
             elif not item.isSelected():
                 title_item.setStyleSheet("background-color: transparent; color: #b1b1b1")
 
-    def populate_tasks(self):
-        self.cache_database()
-        get_selected = self.keep_selected_buffer()
-        criteria_def = self.define_query_criteria()
-
-        self.populate_by_criteria(criteria_def)
-        self.get_current_filter()
-        self.restore_selected_buffer(get_selected)
-
-    def clear_duplicates(self):
-        get_current_content_ids = self.get_view_entries(6)
-        all_documents = self.tiny_ops_cache.get_docs_by_id(get_current_content_ids)
-        self.populate_viewer(all_documents)
-
     def sort_by_end_date(self):
         self.populate_tasks_custom(self.tiny_attr_definitions.end_date_interval)
 
@@ -299,14 +367,12 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
 
     def get_view_entries(self, index):
         self.all_items_in_viewer = []
-
         def recursive_traversal(parent_item):
             for child in range(parent_item.childCount()):
                 child_item = parent_item.child(child)
                 self.all_items_in_viewer.append(int(child_item.text(index)))
                 recursive_traversal(child_item)
 
-        # Start the traversal from the top-level items
         for i in range(self.task_viewer_trw.topLevelItemCount()):
             top_level_item = self.task_viewer_trw.topLevelItem(i)
             self.all_items_in_viewer.append(int(top_level_item.text(index)))
@@ -317,35 +383,57 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         if item is not None:
             text = item.text(6)
             task_doc = self.tiny_ops_cache.get_doc_by_id(int(text))
-            complete_task_emit = {}
-            complete_task_emit["task_id_emit"] = text
-            complete_task_emit["task_emit"] = task_doc
+            complete_task_emit = {"task_id_emit": text, "task_emit": task_doc}
             self.task_document_retrieval.emit(complete_task_emit)
             return task_doc
 
-    def add_custom_widget(self, parent_item, db_doc, task_id):
-        child_item = QtWidgets.QTreeWidgetItem(parent_item)
+    def get_tasks_for_today(self):
+        is_button_checked = self.show_me_tasks_of_today_btn.isChecked()
+        if is_button_checked:
+            criteria_def = self.define_query_criteria()
+            self.populate_by_criteria(criteria_def)
+            get_current_content_ids = self.get_view_entries(6)
+            extracted_tasks_for_today = self.tiny_ops_cache.get_tasks_by_remaining_time(tasks_ids=get_current_content_ids,
+                                                                                 reference_max=3)
 
-        custom_widget_container = TaskEntityWDG(db_document=db_doc, task_id=task_id)
-        custom_widget_container.get_task_title()
-        custom_widget_container.get_progress_bar_amount()
-        custom_widget_container.get_task_title()
-        custom_widget_container.get_task_status()
+            self.populate_by_ids_list(extracted_tasks_for_today)
 
-        custom_widget_container.get_task_prio()
+        else:
+            criteria_def = self.define_query_criteria()
+            self.populate_by_criteria(criteria_def)
 
-        custom_widget_container.delete_btn.clicked.connect(self.delete_task)
-        custom_widget_container.prio_cb.activated.connect(self.update_task_prio)
-        custom_widget_container.status_cb.activated.connect(self.update_task_status)
+    def insert_task_item_at_index(self, item_to_insert, ref_index):
+        all_viewer_items = []
+        for i in range(self.task_viewer_trw.topLevelItemCount()):
+            item = self.task_viewer_trw.topLevelItem(i)
+            all_viewer_items.append(item)
+        all_viewer_items.insert(ref_index, item_to_insert)
+        return all_viewer_items
 
-        self.task_viewer_trw.setItemWidget(child_item, 0, custom_widget_container.prog_bar)
-        self.task_viewer_trw.setItemWidget(child_item, 1, custom_widget_container.task_title_lb)
-        self.task_viewer_trw.setItemWidget(child_item, 2, custom_widget_container.status_cb)
-        self.task_viewer_trw.setItemWidget(child_item, 3, custom_widget_container.prio_cb)
-        self.task_viewer_trw.setItemWidget(child_item, 4, custom_widget_container.delete_btn)
+    def select_row(self):
+        sender_button = self.sender()
+        row = self.task_viewer_trw.indexAt(sender_button.pos()).row()
+        highlighted_item = self.task_viewer_trw.currentItem()
+        if highlighted_item:
+            self.task_viewer_trw.setCurrentItem(highlighted_item)
 
-        child_item.setText(6, str(task_id))
-        return child_item
+    def reload_updated_only(self, task_id):
+        get_updated_doc = self.tiny_ops.get_doc_by_id(task_id)
+        full_document = {task_id: get_updated_doc}
+        self.remove_viewer_entry(task_id)
+
+        refreshed_item = self.create_viewer_entry(full_document, self.current_row_mem)
+        rebuild_items_list = self.insert_task_item_at_index(refreshed_item[0], self.current_row_mem)[:-1]
+        for idx, task_item in enumerate(rebuild_items_list):
+            self.task_viewer_trw.insertTopLevelItem(idx, task_item)
+
+    def remove_viewer_entry(self, task_id):
+        for i in range(self.task_viewer_trw.topLevelItemCount()):
+            item = self.task_viewer_trw.topLevelItem(i)
+            if int(item.text(6)) == int(task_id):
+                self.task_viewer_trw.takeTopLevelItem(i)
+                print(f"Item {item}, REMOVED")
+                break
 
     # This is still to be built (Drag and Drop taks onto eachother to create parent-child)
     def handle_item_dropped(self, parent_item, dropped_index, item):
@@ -355,13 +443,12 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
             print(f"Text from column 6 of the dropped item: {specific_column_text}")
             print(f"Item dropped onto row {dropped_row}")
 
-    @Slot(str)
-    def refresh_all(self):
-        self.populate_tasks()
-
     def update_task_status(self):
         sender_button = self.sender()
         row = self.task_viewer_trw.indexAt(sender_button.pos()).row()
+
+        self.current_row_mem = row
+
         column = self.task_viewer_trw.indexAt(sender_button.pos()).column()
         index = self.task_viewer_trw.model().index(row, column)
         item = self.task_viewer_trw.itemFromIndex(index)
@@ -369,7 +456,10 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         value_selected = sender_button.currentText()
         task_id = item.text(6)
         self.tiny_ops.update_task(int(task_id), self.tiny_attr_paths.status(value_selected))
-        self.cache_database()
+
+        self.cache_database_one(task_id)
+        # self.reload_updated_only(task_id)
+        # self.restore_selected_buffer(task_id)
 
         self.refresh_all()
 
@@ -383,7 +473,7 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
         value_selected = sender_button.currentText()
         task_id = item.text(6)
         self.tiny_ops.update_task(int(task_id), self.tiny_attr_paths.priority(value_selected))
-        self.cache_database()
+        self.cache_database_full()
 
         self.refresh_all()
 
@@ -396,7 +486,7 @@ class ExistingTasksViewerCore(ExitingTasksViewerBuild):
 
         task_id = item.text(6)
         self.tiny_ops.delete_task(int(task_id))
-        self.cache_database()
+        self.cache_database_full()
 
         self.refresh_all()
 
