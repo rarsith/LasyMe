@@ -14,6 +14,10 @@ class TagFilterButtonWDG(QtWidgets.QPushButton):
     def set_button_name(self):
         self.setText(self.button_name)
 
+    def enterEvent(self, event):
+        super(TagFilterButtonWDG, self).enterEvent(event)
+        return event
+
 
 class TasksViewerTagFilterCore(QtWidgets.QWidget):
     tag_button_info = QtCore.Signal(dict)
@@ -58,6 +62,11 @@ class TasksViewerTagFilterCore(QtWidgets.QWidget):
         self.main_layout.addWidget(self.refresh_btn)
         self.setLayout(self.main_layout)
 
+    def send_hovered_tag(self):
+        sender = self.sender()
+        print(sender)
+        # self.tag_button_info.emit(sender.text())
+
     def clear_layout(self):
         while self.main_layout.count():
             item = self.main_layout.takeAt(0)
@@ -82,7 +91,7 @@ if __name__ == "__main__":
     import os
     import sys
 
-    # os.environ["LASY_DATA_ROOT"] = 'D:\\My_Apps_Repo\\database_testing_sandbox'
+    os.environ["LASY_DATA_ROOT"] = 'D:\\My_Apps_Repo\\database_testing_sandbox'
 
     button_n = ['project_', 'LasyMe_TODOs']
 

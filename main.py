@@ -19,5 +19,5 @@ def main():
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
-    # os.environ["LASY_DATA_ROOT"] = 'D:\\My_Apps_Repo\\database_testing_sandbox'
+    os.environ["LASY_DATA_ROOT"] = 'D:\\My_Apps_Repo\\database_testing_sandbox'
     main()
