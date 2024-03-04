@@ -1,7 +1,4 @@
-from tinydb import TinyDB, Query
 from lasy_ops.tdb_attributes_definitions import TaskAttributesDefinitions
-from lasy_ops.connection import LasyConnections
-from lasy_ops.tiny_ops.tasks_ops import TasksOps
 from lasy_common_utils.date_time_utils import DateTime
 
 
@@ -46,7 +43,6 @@ class TasksCachingOps:
     def get_tasks_by_remaining_time(self, tasks_ids: list, reference_max):
         extracted_ids = []
         for task_id in tasks_ids:
-            # get_document = self.get_doc_by_id(task_id)
             end_date = self.get_task_end_date(task_id)
             time_left_interval = DateTime().today_to_end_day(end_day=end_date)
             if time_left_interval < reference_max:

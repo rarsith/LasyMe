@@ -140,8 +140,6 @@ class LasyConnections:
         files_utils.create_file(self.lasy_root_path, self.first_time_run)
 
 
-
-
 if __name__ == "__main__":
     dd = LasyConnections()
     # config_file = dd.get_user_set_db_path()

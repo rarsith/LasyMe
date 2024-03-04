@@ -6,7 +6,6 @@ from PySide2 import QtWidgets, QtCore
 from lasy_ops.schemas.config_schema import ConfigSchemaAttrNames, ConfigSchema
 from lasy_common_utils import config_file_utils
 from lasy_ops.connection import LasyConnections
-from lasy_envars.envars import Envars
 
 
 class LasyFileDialog(QtWidgets.QWidget):
